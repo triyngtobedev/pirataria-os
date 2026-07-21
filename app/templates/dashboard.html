@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — Pirataria Body Art OS{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="mb-1 gold-text"><i class="bi bi-skull"></i> PIRATARIA BODY ART</h4>
+        <small class="text-secondary">OS v0.1</small>
+    </div>
+    <div class="text-end">
+        <small class="text-secondary">Hoje</small>
+        <div class="gold-text" style="font-size:0.9rem;"><strong>{{ hoje_data }}</strong></div>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-6 col-lg-3">
+        <div class="card card-pirataria">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <div class="card-title">Faturamento</div>
+                        <div class="card-value gold-text">R$ {{ "%.0f"|format(faturamento) }}</div>
+                    </div>
+                    <div class="dashboard-icon gold-text"><i class="bi bi-cash-coin"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="card card-pirataria">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <div class="card-title">Procedimentos</div>
+                        <div class="card-value">{{ procedimentos }}</div>
+                    </div>
+                    <div class="dashboard-icon" style="color:#3498db;"><i class="bi bi-gear"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="card card-pirataria">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <div class="card-title">Clientes Novos</div>
+                        <div class="card-value" style="color:#2ecc71;">{{ clientes_novos }}</div>
+                    </div>
+                    <div class="dashboard-icon" style="color:#2ecc71;"><i class="bi bi-people"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="card card-pirataria">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <div class="card-title">Estoque Baixo</div>
+                        <div class="card-value" style="color:#e74c3c;">{{ estoque_baixo|length }}</div>
+                    </div>
+                    <div class="dashboard-icon" style="color:#e74c3c;"><i class="bi bi-exclamation-triangle"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if estoque_baixo %}
+<div class="card card-pirataria mb-4">
+    <div class="card-body">
+        <h6 class="gold-text mb-3"><i class="bi bi-exclamation-triangle-fill"></i> Itens com estoque baixo</h6>
+        <div class="row g-2">
+            {% for item in estoque_baixo %}
+            <div class="col-md-4">
+                <div class="d-flex align-items-center p-2 rounded" style="background: rgba(231,76,60,0.1);">
+                    <i class="bi bi-circle-fill status-repor me-2" style="font-size:0.6rem;"></i>
+                    <div>
+                        <strong>{{ item.nome }}</strong><br>
+                        <small class="text-secondary">{{ item.quantidade }} unidade{% if item.quantidade != 1 %}s{% endif %} — R${{ "%.0f"|format(item.valor_venda) }}</small>
+                    </div>
+                    <a href="{{ url_for('estoque.listar') }}" class="ms-auto text-secondary"><i class="bi bi-arrow-right"></i></a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<div class="row g-3">
+    <div class="col-lg-6">
+        <div class="card card-pirataria h-100">
+            <div class="card-body">
+                <h6 class="gold-text mb-3"><i class="bi bi-wallet2"></i> Formas de Pagamento (Hoje)</h6>
+                {% set formas = [('Pix', total_pix, '#27ae60'), ('Dinheiro', total_dinheiro, '#f39c12'), ('Cartão', total_cartao, '#3498db')] %}
+                {% for nome, valor, cor in formas %}
+                <div class="d-flex justify-content-between mb-2">
+                    <span><span class="badge" style="background:{{ cor }};">{{ nome }}</span></span>
+                    <span class="fw-bold">R$ {{ "%.0f"|format(valor) }}</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="card card-pirataria h-100">
+            <div class="card-body">
+                <h6 class="gold-text mb-3"><i class="bi bi-clock-history"></i> Últimos Atendimentos</h6>
+                {% if atendimentos_hoje %}
+                    {% for at in atendimentos_hoje[:5] %}
+                    <div class="d-flex justify-content-between align-items-center py-2 border-bottom border-secondary" style="border-color:var(--border-color)!important;">
+                        <div>
+                            <strong>{{ at.cliente }}</strong><br>
+                            <small class="text-secondary">{{ at.procedimento }} — {{ at.joia_utilizada }}</small>
+                        </div>
+                        <div class="text-end">
+                            <span class="gold-text fw-bold">R$ {{ "%.0f"|format(at.valor) }}</span><br>
+                            <small class="text-secondary">{{ at.forma_pagamento }}</small>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state">
+                        <i class="bi bi-inbox"></i>
+                        <p class="mt-2">Nenhum atendimento hoje</p>
+                        <a href="{{ url_for('atendimento.listar') }}" class="btn btn-pirataria btn-sm">Registrar Atendimento</a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

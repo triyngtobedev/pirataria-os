@@ -1,0 +1,181 @@
+{% extends "base.html" %}
+{% block title %}Estoque — Pirataria Body Art OS{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h5 class="gold-text mb-0"><i class="bi bi-box-seam"></i> Estoque de Joias e Materiais</h5>
+    <button class="btn btn-pirataria" data-bs-toggle="modal" data-bs-target="#modalAdicionar">
+        <i class="bi bi-plus-lg"></i> Novo Produto
+    </button>
+</div>
+
+<div class="card card-pirataria">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-pirataria mb-0">
+                <thead>
+                    <tr>
+                        <th>Produto</th>
+                        <th>Categoria</th>
+                        <th>Qtd</th>
+                        <th>Custo</th>
+                        <th>Venda</th>
+                        <th>Local</th>
+                        <th>Status</th>
+                        <th style="width:80px;"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if produtos %}
+                        {% for p in produtos %}
+                        <tr>
+                            <td><strong>{{ p.nome }}</strong></td>
+                            <td><span class="badge badge-pirataria" style="background:rgba(212,168,67,0.15);color:var(--gold);">{{ p.categoria or '—' }}</span></td>
+                            <td>{{ p.quantidade }}</td>
+                            <td>R$ {{ "%.0f"|format(p.custo) }}</td>
+                            <td class="gold-text fw-bold">R$ {{ "%.0f"|format(p.valor_venda) }}</td>
+                            <td><small class="text-secondary">{{ p.local_fisico or '—' }}</small></td>
+                            <td>
+                                {% if p.quantidade == 0 %}
+                                    <span class="status-repor"><i class="bi bi-circle-fill" style="font-size:0.6rem;"></i> Repor</span>
+                                {% elif p.quantidade <= 3 %}
+                                    <span class="status-poucas"><i class="bi bi-circle-fill" style="font-size:0.6rem;"></i> Poucas</span>
+                                {% else %}
+                                    <span class="status-disponivel"><i class="bi bi-circle-fill" style="font-size:0.6rem;"></i> Disponível</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="d-flex gap-1">
+                                    <button class="btn btn-sm btn-outline-pirataria py-0 px-2" onclick="editarProduto({{ p.id }}, '{{ p.nome.replace("'", "\\'") }}', '{{ p.categoria.replace("'", "\\'") }}', {{ p.quantidade }}, {{ p.custo }}, {{ p.valor_venda }}, '{{ p.local_fisico.replace("'", "\\'") }}')">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                    <a href="{{ url_for('estoque.excluir', id=p.id) }}" class="btn btn-sm btn-danger-pirataria py-0 px-2" onclick="return confirm('Remover {{ p.nome }}?')">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="8">
+                                <div class="empty-state">
+                                    <i class="bi bi-box-seam"></i>
+                                    <p class="mt-2">Nenhum produto cadastrado</p>
+                                    <button class="btn btn-pirataria btn-sm" data-bs-toggle="modal" data-bs-target="#modalAdicionar">Adicionar Primeiro Produto</button>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalAdicionar" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content" style="background:var(--bg-card);color:var(--text-primary);border:1px solid var(--border-color);">
+            <div class="modal-header border-secondary">
+                <h5 class="gold-text mb-0"><i class="bi bi-plus-circle"></i> Novo Produto</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" action="{{ url_for('estoque.adicionar') }}">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Nome do Produto *</label>
+                        <input type="text" name="nome" class="form-control form-pirataria" placeholder="Ex: Argola Clicker Dourada 8mm" required>
+                    </div>
+                    <div class="row g-3 mb-3">
+                        <div class="col-6">
+                            <label class="form-label">Categoria</label>
+                            <input type="text" name="categoria" class="form-control form-pirataria" placeholder="Ex: Argola, Lóbulo, Umbilical">
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label">Quantidade</label>
+                            <input type="number" name="quantidade" class="form-control form-pirataria" value="1" min="0">
+                        </div>
+                    </div>
+                    <div class="row g-3 mb-3">
+                        <div class="col-6">
+                            <label class="form-label">Custo (R$)</label>
+                            <input type="number" name="custo" class="form-control form-pirataria" value="0" step="0.01" min="0">
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label">Valor de Venda (R$)</label>
+                            <input type="number" name="valor_venda" class="form-control form-pirataria" value="0" step="0.01" min="0">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Local Físico</label>
+                        <input type="text" name="local_fisico" class="form-control form-pirataria" placeholder="Ex: Gaveta 2, Prateleira A">
+                    </div>
+                </div>
+                <div class="modal-footer border-secondary">
+                    <button type="button" class="btn btn-outline-pirataria" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-pirataria"><i class="bi bi-check-lg"></i> Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalEditar" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content" style="background:var(--bg-card);color:var(--text-primary);border:1px solid var(--border-color);">
+            <div class="modal-header border-secondary">
+                <h5 class="gold-text mb-0"><i class="bi bi-pencil"></i> Editar Produto</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" id="formEditar">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Nome do Produto *</label>
+                        <input type="text" name="nome" id="editNome" class="form-control form-pirataria" required>
+                    </div>
+                    <div class="row g-3 mb-3">
+                        <div class="col-6">
+                            <label class="form-label">Categoria</label>
+                            <input type="text" name="categoria" id="editCategoria" class="form-control form-pirataria">
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label">Quantidade</label>
+                            <input type="number" name="quantidade" id="editQuantidade" class="form-control form-pirataria" min="0">
+                        </div>
+                    </div>
+                    <div class="row g-3 mb-3">
+                        <div class="col-6">
+                            <label class="form-label">Custo (R$)</label>
+                            <input type="number" name="custo" id="editCusto" class="form-control form-pirataria" step="0.01" min="0">
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label">Valor de Venda (R$)</label>
+                            <input type="number" name="valor_venda" id="editValorVenda" class="form-control form-pirataria" step="0.01" min="0">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Local Físico</label>
+                        <input type="text" name="local_fisico" id="editLocal" class="form-control form-pirataria">
+                    </div>
+                </div>
+                <div class="modal-footer border-secondary">
+                    <button type="button" class="btn btn-outline-pirataria" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-pirataria"><i class="bi bi-check-lg"></i> Atualizar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function editarProduto(id, nome, categoria, quantidade, custo, valorVenda, local) {
+    document.getElementById('formEditar').action = '{{ url_for("estoque.editar", id=0) }}'.replace('0', id);
+    document.getElementById('editNome').value = nome;
+    document.getElementById('editCategoria').value = categoria;
+    document.getElementById('editQuantidade').value = quantidade;
+    document.getElementById('editCusto').value = custo;
+    document.getElementById('editValorVenda').value = valorVenda;
+    document.getElementById('editLocal').value = local;
+    new bootstrap.Modal(document.getElementById('modalEditar')).show();
+}
+</script>
+{% endblock %}

@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+{% block title %}Atendimentos — Pirataria Body Art OS{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h5 class="gold-text mb-0"><i class="bi bi-clipboard-check"></i> Registro de Atendimentos</h5>
+    <button class="btn btn-pirataria" data-bs-toggle="modal" data-bs-target="#modalNovoAtendimento">
+        <i class="bi bi-plus-lg"></i> Novo Atendimento
+    </button>
+</div>
+
+<div class="card card-pirataria">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-pirataria mb-0">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Cliente</th>
+                        <th>Procedimento</th>
+                        <th>Joia</th>
+                        <th>Valor</th>
+                        <th>Pagamento</th>
+                        <th>Piercer</th>
+                        <th>Data</th>
+                        <th style="width:50px;"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if atendimentos %}
+                        {% for at in atendimentos %}
+                        <tr>
+                            <td><span class="badge badge-pirataria" style="background:rgba(212,168,67,0.15);color:var(--gold);">#{{ at.id }}</span></td>
+                            <td><strong>{{ at.cliente }}</strong></td>
+                            <td>{{ at.procedimento or '—' }}</td>
+                            <td><small>{{ at.joia_utilizada or '—' }}</small></td>
+                            <td class="gold-text fw-bold">R$ {{ "%.0f"|format(at.valor) }}</td>
+                            <td>
+                                {% set pgto = at.forma_pagamento %}
+                                {% if pgto == 'Pix' %}
+                                    <span class="badge" style="background:#27ae60;">Pix</span>
+                                {% elif pgto == 'Dinheiro' %}
+                                    <span class="badge" style="background:#f39c12;">Dinheiro</span>
+                                {% elif pgto == 'Cartão' %}
+                                    <span class="badge" style="background:#3498db;">Cartão</span>
+                                {% else %}
+                                    <span class="badge" style="background:#666;">{{ pgto }}</span>
+                                {% endif %}
+                            </td>
+                            <td><small>{{ at.piercer or '—' }}</small></td>
+                            <td><small class="text-secondary">{{ at.created_at.strftime('%d/%m/%Y') if at.created_at else '' }}</small></td>
+                            <td>
+                                <a href="{{ url_for('atendimento.excluir', id=at.id) }}" class="btn btn-sm btn-danger-pirataria py-0 px-2" onclick="return confirm('Excluir atendimento de {{ at.cliente }}?')">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="9">
+                                <div class="empty-state">
+                                    <i class="bi bi-clipboard-x"></i>
+                                    <p class="mt-2">Nenhum atendimento registrado</p>
+                                    <button class="btn btn-pirataria btn-sm" data-bs-toggle="modal" data-bs-target="#modalNovoAtendimento">Registrar Primeiro Atendimento</button>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalNovoAtendimento" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content" style="background:var(--bg-card);color:var(--text-primary);border:1px solid var(--border-color);">
+            <div class="modal-header border-secondary">
+                <h5 class="gold-text mb-0"><i class="bi bi-plus-circle"></i> Novo Atendimento</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" action="{{ url_for('atendimento.novo') }}">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Nome do Cliente *</label>
+                        <input type="text" name="cliente" class="form-control form-pirataria" placeholder="Ex: Maria" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Procedimento</label>
+                        <input type="text" name="procedimento" class="form-control form-pirataria" placeholder="Ex: Piercing nariz">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Joia Utilizada</label>
+                        <input type="text" name="joia_utilizada" class="form-control form-pirataria" placeholder="Ex: Argola titânio dourada" list="joiasList">
+                        <datalist id="joiasList">
+                            {% for p in produtos %}
+                                <option value="{{ p.nome }}">
+                            {% endfor %}
+                        </datalist>
+                        <small class="text-secondary">Se o nome da joia existir no estoque, a quantidade será baixada.</small>
+                    </div>
+                    <div class="row g-3 mb-3">
+                        <div class="col-6">
+                            <label class="form-label">Valor (R$)</label>
+                            <input type="number" name="valor" class="form-control form-pirataria" value="0" step="0.01" min="0" required>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label">Forma de Pagamento</label>
+                            <select name="forma_pagamento" class="form-control form-pirataria">
+                                <option value="Pix">Pix</option>
+                                <option value="Dinheiro">Dinheiro</option>
+                                <option value="Cartão">Cartão</option>
+                                <option value="Débito">Débito</option>
+                                <option value="Crédito">Crédito</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Piercer</label>
+                        <input type="text" name="piercer" class="form-control form-pirataria" placeholder="Ex: Padrinho">
+                    </div>
+                </div>
+                <div class="modal-footer border-secondary">
+                    <button type="button" class="btn btn-outline-pirataria" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-pirataria"><i class="bi bi-check-lg"></i> Registrar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
