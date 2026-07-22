@@ -1,8 +1,6 @@
 from flask import Blueprint, render_template, redirect, url_for, request, flash
 from flask_login import login_user, logout_user, login_required
-from app import db
-from app.models.schemas import Studio, User
-from app.seed import seed_studio
+from app.services.auth_service import AuthService
 
 auth_bp = Blueprint('auth', __name__, template_folder='../templates')
 
@@ -11,8 +9,8 @@ def login():
     if request.method == 'POST':
         email = request.form.get('email', '').strip().lower()
         password = request.form.get('password', '')
-        user = User.query.filter_by(email=email).first()
-        if user and user.check_password(password):
+        user = AuthService.login(email, password)
+        if user:
             login_user(user)
             return redirect(url_for('dashboard.dashboard'))
         flash('Email ou senha inválidos.', 'danger')
@@ -22,28 +20,22 @@ def login():
 def register():
     if request.method == 'POST':
         email = request.form.get('email', '').strip().lower()
-        if User.query.filter_by(email=email).first():
-            flash('Email já cadastrado.', 'danger')
+        password = request.form.get('password', '')
+
+        if len(password) < 6:
+            flash('Senha deve ter no mínimo 6 caracteres.', 'danger')
             return render_template('auth/register.html')
 
-        studio = Studio(nome=request.form.get('studio_nome', '').strip())
-        db.session.add(studio)
-        db.session.flush()
-
-        user = User(
-            studio_id=studio.id,
+        user, error = AuthService.register(
+            studio_nome=request.form.get('studio_nome', '').strip(),
             nome=request.form.get('nome', '').strip(),
             email=email,
-            is_admin=True
+            password=password,
         )
-        user.set_password(request.form.get('password', ''))
-        db.session.add(user)
-        db.session.commit()
-
-        seed_studio(studio.id)
-
-        login_user(user)
-        return redirect(url_for('dashboard.dashboard'))
+        if user:
+            login_user(user)
+            return redirect(url_for('dashboard.dashboard'))
+        flash(error or 'Erro ao cadastrar.', 'danger')
     return render_template('auth/register.html')
 
 @auth_bp.route('/logout')

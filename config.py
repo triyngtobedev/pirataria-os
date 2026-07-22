@@ -1,21 +1,28 @@
 import os
+from pathlib import Path
+
 
 class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY', 'pirataria-dev-key-change-in-production')
     _DB_URL = os.environ.get(
         'DATABASE_URL',
-        'sqlite:///' + os.path.join(os.path.dirname(__file__), 'app', 'data', 'pirataria.db')
+        'sqlite:///' + str(Path(__file__).parent / 'app' / 'data' / 'pirataria.db')
     )
-    SQLALCHEMY_DATABASE_URI = _DB_URL.replace('postgres://', 'postgresql://', 1) if _DB_URL and _DB_URL.startswith('postgres://') else _DB_URL
+    SQLALCHEMY_DATABASE_URI = _DB_URL.replace('postgres://', 'postgresql://', 1)
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     MAX_CONTENT_LENGTH = 16 * 1024 * 1024
+    WTF_CSRF_ENABLED = True
+    WTF_CSRF_TIME_LIMIT = None
+
 
 class ProductionConfig(Config):
     _DB_URL = os.environ.get('DATABASE_URL', 'postgresql://user:pass@localhost/piratariaos')
-    SQLALCHEMY_DATABASE_URI = _DB_URL.replace('postgres://', 'postgresql://', 1) if _DB_URL and _DB_URL.startswith('postgres://') else _DB_URL
+    SQLALCHEMY_DATABASE_URI = _DB_URL.replace('postgres://', 'postgresql://', 1)
+
 
 class DevelopmentConfig(Config):
     DEBUG = True
+
 
 config = {
     'development': DevelopmentConfig,

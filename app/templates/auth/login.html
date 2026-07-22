@@ -10,6 +10,7 @@
                 <p class="serif-subtitle mb-4">Sistema de Gestão • v0.1</p>
 
                 <form method="POST">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <div class="mb-3 text-start">
                         <label class="form-label small gold-text">Email</label>
                         <input type="email" name="email" class="form-control form-pirataria" placeholder="seu@email.com" required>

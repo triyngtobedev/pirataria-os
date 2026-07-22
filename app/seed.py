@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import random
 from app import db
 from app.models.schemas import Produto, Atendimento
@@ -55,7 +55,7 @@ def seed_studio(studio_id):
     for p in _produtos_seed:
         db.session.add(Produto(studio_id=studio_id, **p))
 
-    agora = datetime.utcnow()
+    agora = datetime.now(timezone.utc)
     for a in _atendimentos_seed:
         created = agora - timedelta(days=a["dias_atras"], hours=random.randint(9, 18))
         db.session.add(Atendimento(

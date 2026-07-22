@@ -1,8 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_required, current_user
-from app import db
-from app.models.schemas import Produto, Atendimento
 from app.middleware.tenant import inject_studio
+from app.services.atendimento_service import AtendimentoService
 
 atendimento_bp = Blueprint('atendimento', __name__, template_folder='../templates')
 
@@ -13,10 +12,8 @@ def before_request():
 @atendimento_bp.route('/')
 @login_required
 def listar():
-    sid = current_user.studio_id
-    atendimentos = Atendimento.query.filter_by(studio_id=sid)\
-        .order_by(Atendimento.created_at.desc()).all()
-    produtos = Produto.query.filter_by(studio_id=sid).order_by(Produto.nome).all()
+    atendimentos = AtendimentoService.listar(current_user.studio_id)
+    produtos = AtendimentoService.listar_produtos(current_user.studio_id)
     return render_template('atendimento.html', atendimentos=atendimentos, produtos=produtos)
 
 @atendimento_bp.route('/novo', methods=['POST'])
@@ -27,38 +24,27 @@ def novo():
         flash('Nome do cliente é obrigatório.', 'danger')
         return redirect(url_for('atendimento.listar'))
 
-    sid = current_user.studio_id
-    joia = request.form.get('joia_utilizada', '').strip()
+    dados = {
+        'cliente': cliente,
+        'procedimento': request.form.get('procedimento', '').strip(),
+        'joia_utilizada': request.form.get('joia_utilizada', '').strip(),
+        'valor': float(request.form.get('valor', 0)),
+        'forma_pagamento': request.form.get('forma_pagamento', '').strip(),
+        'piercer': request.form.get('piercer', '').strip(),
+        'status': 'Pago',
+    }
 
-    a = Atendimento(
-        studio_id=sid,
-        cliente=cliente,
-        procedimento=request.form.get('procedimento', '').strip(),
-        joia_utilizada=joia,
-        valor=float(request.form.get('valor', 0)),
-        forma_pagamento=request.form.get('forma_pagamento', '').strip(),
-        piercer=request.form.get('piercer', '').strip(),
-        status='Pago'
+    AtendimentoService.registrar(
+        current_user.studio_id, dados,
+        user_id=current_user.id
     )
-    db.session.add(a)
 
-    if joia:
-        produto = Produto.query.filter(
-            Produto.studio_id == sid,
-            Produto.nome.ilike(f'%{joia}%')
-        ).first()
-        if produto and produto.quantidade > 0:
-            produto.quantidade -= 1
-
-    db.session.commit()
     flash('Atendimento registrado!', 'success')
     return redirect(url_for('atendimento.listar'))
 
 @atendimento_bp.route('/excluir/<int:id>')
 @login_required
 def excluir(id):
-    a = Atendimento.query.filter_by(id=id, studio_id=current_user.studio_id).first_or_404()
-    db.session.delete(a)
-    db.session.commit()
+    AtendimentoService.excluir(id, user_id=current_user.id)
     flash('Atendimento removido.', 'warning')
     return redirect(url_for('atendimento.listar'))

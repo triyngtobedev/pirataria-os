@@ -2,11 +2,15 @@ import os
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
+from flask_migrate import Migrate
+from flask_wtf.csrf import CSRFProtect
 from config import config
 
 db = SQLAlchemy()
 login_manager = LoginManager()
 login_manager.login_view = 'auth.login'
+migrate = Migrate()
+csrf = CSRFProtect()
 
 def create_app(config_name=None):
     if config_name is None:
@@ -15,8 +19,19 @@ def create_app(config_name=None):
     app = Flask(__name__)
     app.config.from_object(config.get(config_name, config['default']))
 
+    if config_name == 'production':
+        if app.config['SECRET_KEY'] == 'pirataria-dev-key-change-in-production':
+            raise RuntimeError('SECRET_KEY must be set in production')
+
+    db_url = os.environ.get('DATABASE_URL')
+    if db_url:
+        db_url = db_url.replace('postgres://', 'postgresql://', 1)
+        app.config['SQLALCHEMY_DATABASE_URI'] = db_url
+
     db.init_app(app)
     login_manager.init_app(app)
+    migrate.init_app(app, db)
+    csrf.init_app(app)
 
     from app.blueprints.auth import auth_bp
     from app.blueprints.dashboard import dashboard_bp
@@ -35,23 +50,5 @@ def create_app(config_name=None):
     with app.app_context():
         os.makedirs(os.path.join(os.path.dirname(__file__), 'data'), exist_ok=True)
         os.makedirs(os.path.join(os.path.dirname(__file__), 'static', 'uploads'), exist_ok=True)
-        from app.models.schemas import Studio, User, Produto, Atendimento, Insumo
-        db.create_all()
-        from sqlalchemy import text as sa_text
-        try:
-            db.session.execute(sa_text('ALTER TABLE produtos ADD COLUMN foto VARCHAR(500) DEFAULT \'\''))
-            db.session.commit()
-        except Exception:
-            db.session.rollback()
-        try:
-            db.session.execute(sa_text('ALTER TABLE insumos ADD COLUMN unidade VARCHAR(50) DEFAULT \'unidade\''))
-            db.session.commit()
-        except Exception:
-            db.session.rollback()
-        try:
-            db.session.execute(sa_text('ALTER TABLE produtos ADD COLUMN favorito BOOLEAN DEFAULT FALSE'))
-            db.session.commit()
-        except Exception:
-            db.session.rollback()
 
     return app

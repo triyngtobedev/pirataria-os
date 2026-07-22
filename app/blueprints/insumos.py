@@ -1,8 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_required, current_user
-from app import db
-from app.models.schemas import Insumo
 from app.middleware.tenant import inject_studio
+from app.services.insumo_service import InsumoService
 
 insumos_bp = Blueprint('insumos', __name__, template_folder='../templates')
 
@@ -13,8 +12,7 @@ def before_request():
 @insumos_bp.route('/')
 @login_required
 def listar():
-    insumos = Insumo.query.filter_by(studio_id=current_user.studio_id)\
-        .order_by(Insumo.created_at.desc()).all()
+    insumos = InsumoService.listar(current_user.studio_id)
     return render_template('insumos.html', insumos=insumos)
 
 @insumos_bp.route('/adicionar', methods=['POST'])
@@ -25,41 +23,43 @@ def adicionar():
         flash('Nome do insumo é obrigatório.', 'danger')
         return redirect(url_for('insumos.listar'))
 
-    i = Insumo(
-        studio_id=current_user.studio_id,
-        nome=nome,
-        categoria=request.form.get('categoria', '').strip(),
-        quantidade=float(request.form.get('quantidade', 0)),
-        unidade=request.form.get('unidade', 'unidade').strip(),
-        custo_unitario=float(request.form.get('custo_unitario', 0)),
-        fornecedor=request.form.get('fornecedor', '').strip(),
-        local_fisico=request.form.get('local_fisico', '').strip()
-    )
-    db.session.add(i)
-    db.session.commit()
+    dados = {
+        'nome': nome,
+        'categoria': request.form.get('categoria', '').strip(),
+        'quantidade': float(request.form.get('quantidade', 0)),
+        'unidade': request.form.get('unidade', 'unidade').strip(),
+        'custo_unitario': float(request.form.get('custo_unitario', 0)),
+        'fornecedor': request.form.get('fornecedor', '').strip(),
+        'local_fisico': request.form.get('local_fisico', '').strip(),
+    }
+
+    InsumoService.criar(current_user.studio_id, dados, user_id=current_user.id)
     flash('Insumo adicionado!', 'success')
     return redirect(url_for('insumos.listar'))
 
 @insumos_bp.route('/editar/<int:id>', methods=['POST'])
 @login_required
 def editar(id):
-    i = Insumo.query.filter_by(id=id, studio_id=current_user.studio_id).first_or_404()
-    i.nome = request.form.get('nome', '').strip()
-    i.categoria = request.form.get('categoria', '').strip()
-    i.quantidade = float(request.form.get('quantidade', 0))
-    i.unidade = request.form.get('unidade', 'unidade').strip()
-    i.custo_unitario = float(request.form.get('custo_unitario', 0))
-    i.fornecedor = request.form.get('fornecedor', '').strip()
-    i.local_fisico = request.form.get('local_fisico', '').strip()
-    db.session.commit()
-    flash('Insumo atualizado!', 'success')
+    dados = {
+        'nome': request.form.get('nome', '').strip(),
+        'categoria': request.form.get('categoria', '').strip(),
+        'quantidade': float(request.form.get('quantidade', 0)),
+        'unidade': request.form.get('unidade', 'unidade').strip(),
+        'custo_unitario': float(request.form.get('custo_unitario', 0)),
+        'fornecedor': request.form.get('fornecedor', '').strip(),
+        'local_fisico': request.form.get('local_fisico', '').strip(),
+    }
+
+    result = InsumoService.atualizar(id, dados, user_id=current_user.id)
+    if result:
+        flash('Insumo atualizado!', 'success')
+    else:
+        flash('Insumo não encontrado.', 'danger')
     return redirect(url_for('insumos.listar'))
 
 @insumos_bp.route('/excluir/<int:id>')
 @login_required
 def excluir(id):
-    i = Insumo.query.filter_by(id=id, studio_id=current_user.studio_id).first_or_404()
-    db.session.delete(i)
-    db.session.commit()
+    InsumoService.excluir(id, user_id=current_user.id)
     flash('Insumo removido.', 'warning')
     return redirect(url_for('insumos.listar'))
