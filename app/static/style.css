@@ -8,8 +8,8 @@
     --gold: #d4a843;
     --gold-light: #f0d080;
     --gold-dark: #a88530;
-    --text-primary: #f0f0f0;
-    --text-secondary: #aaa;
+    --text-primary: #ffffff;
+    --text-secondary: #cccccc;
     --red-accent: #e74c3c;
     --red-bg: rgba(231, 76, 60, 0.15);
     --green-accent: #2ecc71;
@@ -209,7 +209,13 @@ h1, h2, h3, h4, h5, h6,
 .table-pirataria td {
     border-color: var(--border-color) !important;
     vertical-align: middle;
-    color: var(--text-primary);
+    color: #f0f0f0;
+    font-size: 0.9rem;
+}
+
+.table-pirataria td small {
+    color: #f0f0f0;
+    font-size: 0.9rem;
 }
 
 .table-pirataria tbody tr:hover {

@@ -31,19 +31,19 @@
                         {% for p in produtos %}
                         <tr>
                             <td><strong class="gold-text">{{ p.nome }}</strong></td>
-                            <td><small>{{ p.tipo_joia or '—' }}</small></td>
+                            <td style="color:#ffffff;">{{ p.tipo_joia or '—' }}</td>
                             <td>
                                 {% if p.material %}
-                                    <span class="badge badge-pirataria" style="background:rgba(212,168,67,0.12);color:var(--gold);font-weight:600;">
+                                    <span class="badge badge-pirataria" style="background:rgba(255,255,255,0.1);color:#ffffff;font-weight:600;">
                                         {{ p.material }}
                                     </span>
-                                {% else %}—{% endif %}
+                                {% else %}<span style="color:#ffffff;">—</span>{% endif %}
                             </td>
-                            <td><small>{{ p.local_aplicacao or '—' }}</small></td>
-                            <td class="fw-bold">{{ p.quantidade }}</td>
-                            <td>R$ {{ "%.0f"|format(p.custo) }}</td>
+                            <td style="color:#ffffff;">{{ p.local_aplicacao or '—' }}</td>
+                            <td class="fw-bold" style="color:#ffffff;">{{ p.quantidade }}</td>
+                            <td style="color:#ffffff;">R$ {{ "%.0f"|format(p.custo) }}</td>
                             <td class="gold-text fw-bold">R$ {{ "%.0f"|format(p.valor_venda) }}</td>
-                            <td><small class="text-secondary">{{ p.local_fisico or '—' }}</small></td>
+                            <td style="color:#999999;">{{ p.local_fisico or '—' }}</td>
                             <td>
                                 {% if p.quantidade == 0 %}
                                     <span class="status-repor"><i class="bi bi-circle-fill me-1" style="font-size:0.5rem;"></i>Repor</span>
