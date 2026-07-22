@@ -89,7 +89,7 @@ def sync_from_google(studio_id):
         updated = event.get('updated', '')
         criados += _importar_evento(studio_id, eid, summary, description, start_dt, updated)
 
-    if integration.tasks_list_id and not events:
+    if integration.tasks_list_id:
         try:
             tasks = google_service.listar_tarefas(
                 integration, client_id, client_secret,
