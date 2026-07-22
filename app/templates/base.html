@@ -32,7 +32,7 @@
                 <img src="{{ url_for('static', filename='logos/logo-principal.png') }}" alt="Pirataria" class="brand-logo">
             </a>
             <span class="serif-subtitle d-none d-md-inline">
-                ✦ {{ g.studio_nome or '' }}
+                ✦ {{ g.get('studio_nome', '') }}
             </span>
             <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>

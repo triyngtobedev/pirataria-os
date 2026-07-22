@@ -17,14 +17,16 @@ depends_on = None
 
 
 def upgrade():
-    try:
+    conn = op.get_bind()
+    inspector = sa.inspect(conn)
+    columns = [c['name'] for c in inspector.get_columns('users')]
+    if 'role' not in columns:
         op.add_column('users', sa.Column('role', sa.String(length=50), nullable=True))
-    except Exception:
-        pass
 
 
 def downgrade():
-    try:
+    conn = op.get_bind()
+    inspector = sa.inspect(conn)
+    columns = [c['name'] for c in inspector.get_columns('users')]
+    if 'role' in columns:
         op.drop_column('users', 'role')
-    except Exception:
-        pass
