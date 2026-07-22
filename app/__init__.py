@@ -68,6 +68,16 @@ def create_app(config_name=None):
 
     if not scheduler.running and not app.config.get('TESTING'):
         from app.services.sync_service import sync_all_studios
+
+        with app.app_context():
+            from app.models.schemas import CalendarIntegration
+            integracoes = CalendarIntegration.query.all()
+            for integ in integracoes:
+                integ.last_sync_at = None
+            if integracoes:
+                db.session.commit()
+                app.logger.info('Reset last_sync_at for %d integrations (full re-sync)', len(integracoes))
+
         scheduler.add_job(
             sync_all_studios,
             'interval',
