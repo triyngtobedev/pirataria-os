@@ -72,8 +72,9 @@ def sync_from_google(studio_id):
         events = google_service.listar_mudancas(integration, client_id, client_secret, since)
     except Exception:
         logger.warning('Sync com updatedMin falhou, tentando sem filtro de data...')
+        since = None
         try:
-            events = google_service.listar_mudancas(integration, client_id, client_secret, since=None)
+            events = google_service.listar_mudancas(integration, client_id, client_secret, since)
         except Exception as e:
             logger.error('Sync falhou completamente: %s', e)
             events = []
@@ -95,9 +96,16 @@ def sync_from_google(studio_id):
                 integration, client_id, client_secret,
                 integration.tasks_list_id, since,
             )
-        except Exception as e:
-            logger.error('Sync de tasks falhou: %s', e)
-            tasks = []
+        except Exception:
+            logger.warning('Sync tasks com updatedMin falhou, tentando sem filtro...')
+            try:
+                tasks = google_service.listar_tarefas(
+                    integration, client_id, client_secret,
+                    integration.tasks_list_id, since=None,
+                )
+            except Exception as e:
+                logger.error('Sync tasks falhou completamente: %s', e)
+                tasks = []
         if tasks:
             amostra = tasks[0]
             logger.info('Task amostra: id=%s title=%s due=%s notes=%s keys=%s',
