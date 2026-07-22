@@ -90,8 +90,9 @@ def connect():
 def callback():
     flow = _get_flow()
     state = session.pop('google_oauth_state', None)
+    auth_url = request.url.replace('http://', 'https://')
     flow.fetch_token(
-        authorization_response=request.url,
+        authorization_response=auth_url,
         state=state,
     )
 
