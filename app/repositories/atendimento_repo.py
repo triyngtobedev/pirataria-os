@@ -13,6 +13,7 @@ class AtendimentoRepository(BaseRepository):
         return Atendimento.query.filter(
             Atendimento.studio_id == studio_id,
             Atendimento.is_active == True,
+            Atendimento.google_event_id.is_(None),
             db.func.date(Atendimento.created_at) == hoje
         ).order_by(Atendimento.created_at.desc()).all()
 
@@ -35,6 +36,7 @@ class AtendimentoRepository(BaseRepository):
         ).filter(
             Atendimento.studio_id == studio_id,
             Atendimento.is_active == True,
+            Atendimento.google_event_id.is_(None),
             db.func.date(Atendimento.created_at) == hoje
         ).first()
 
@@ -49,6 +51,7 @@ class AtendimentoRepository(BaseRepository):
         ).filter(
             Atendimento.studio_id == studio_id,
             Atendimento.is_active == True,
+            Atendimento.google_event_id.is_(None),
             Atendimento.created_at >= primeiro_dia
         ).first()
 

@@ -34,7 +34,7 @@
     <div class="card-body">
         <h6 class="gold-text mb-3 section-header"><i class="bi bi-clock"></i> Próximos Agendamentos</h6>
         {% for ag in proximos %}
-        <div class="d-flex align-items-center gap-3 py-2 {% if not loop.last %}border-bottom{% endif %}" style="border-color:var(--border-color)!important;">
+        <div class="d-flex align-items-center gap-3 py-2 {% if not loop.last %}border-bottom{% endif %}" style="border-color:var(--border-color)!important;color:var(--text-primary);">
             <div class="text-center" style="min-width:70px;">
                 <div style="font-size:1.5rem;font-weight:700;color:var(--gold);line-height:1;">
                     {{ ag.scheduled_at.strftime('%d') if ag.scheduled_at else '—' }}
@@ -43,12 +43,14 @@
                     {{ ag.scheduled_at.strftime('%b').upper() if ag.scheduled_at else '' }}
                 </small>
                 <br>
+                {% if ag.scheduled_at and ag.scheduled_at.strftime('%H:%M') != '00:00' %}
                 <small class="gold-text" style="font-size:0.75rem;">
-                    {{ ag.scheduled_at.strftime('%H:%M') if ag.scheduled_at else '' }}
+                    {{ ag.scheduled_at.strftime('%H:%M') }}
                 </small>
+                {% endif %}
             </div>
             <div class="flex-grow-1">
-                <strong>{{ ag.cliente }}</strong><br>
+                <strong style="color:var(--text-primary);">{{ ag.cliente }}</strong><br>
                 <small class="text-secondary">{{ ag.procedimento or '' }}{% if ag.joia_utilizada %} — {{ ag.joia_utilizada }}{% endif %}</small>
             </div>
             <div class="text-end">
@@ -74,7 +76,7 @@
     <div class="card-body">
         <h6 class="gold-text mb-3 section-header"><i class="bi bi-clock-history"></i> Últimos Atendimentos</h6>
         {% for ag in passados %}
-        <div class="d-flex align-items-center gap-3 py-2 {% if not loop.last %}border-bottom{% endif %}" style="border-color:var(--border-color)!important;">
+        <div class="d-flex align-items-center gap-3 py-2 {% if not loop.last %}border-bottom{% endif %}" style="border-color:var(--border-color)!important;color:var(--text-primary);">
             <div class="text-center" style="min-width:70px;">
                 <div style="font-size:1.2rem;font-weight:600;color:var(--text-secondary);line-height:1;">
                     {{ (ag.scheduled_at or ag.created_at).strftime('%d') }}
@@ -84,7 +86,7 @@
                 </small>
             </div>
             <div class="flex-grow-1">
-                <strong>{{ ag.cliente }}</strong><br>
+                <strong style="color:var(--text-primary);">{{ ag.cliente }}</strong><br>
                 <small class="text-secondary">{{ ag.procedimento or '' }}</small>
             </div>
             <div class="text-end">
