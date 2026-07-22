@@ -43,13 +43,13 @@ def _importar_evento(studio_id, event_id, summary, description, start_dt, event_
             event_updated = None
 
     if existing:
+        if scheduled is not None:
+            existing.scheduled_at = scheduled
         if event_updated and existing.updated_at and event_updated > existing.updated_at.replace(tzinfo=timezone.utc):
             for campo in ('cliente', 'procedimento', 'joia_utilizada', 'valor', 'forma_pagamento', 'piercer'):
                 v = dados.get(campo)
                 if v is not None:
                     setattr(existing, campo, v)
-            if scheduled is not None:
-                existing.scheduled_at = scheduled
         return 0
 
     scheduled = None
