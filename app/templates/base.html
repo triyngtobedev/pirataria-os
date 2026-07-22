@@ -47,6 +47,7 @@
                     <li class="nav-item"><a class="nav-link {% if '/agenda' in request.path or '/calendar' in request.path %}active{% endif %}" href="{{ url_for('calendar.agenda') }}"><i class="bi bi-calendar-event"></i>Agenda</a></li>
                     <li class="nav-item"><button class="nav-link theme-btn" onclick="inscreverPush()" title="Ativar notificacoes" style="border:none;background:transparent;padding:0.5rem 1rem;"><i class="bi bi-bell"></i></button></li>
                     <li class="nav-item"><button class="nav-link theme-btn" onclick="alternarTema()" title="Alternar tema" style="border:none;background:transparent;padding:0.5rem 1rem;"><i class="bi" id="iconeTema"></i></button></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.change_password') }}" title="Alterar senha"><i class="bi bi-key"></i></a></li>
                     <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.logout') }}"><i class="bi bi-box-arrow-right"></i>Sair</a></li>
                 </ul>
             </div>

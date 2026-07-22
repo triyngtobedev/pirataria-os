@@ -7,6 +7,13 @@
       <div class="card-body p-4">
         <h4 class="gold-text mb-3 text-center"><i class="bi bi-key"></i> Recuperar Senha</h4>
         <p class="serif-subtitle text-center mb-4">Digite seu email para receber o link de recuperação.</p>
+        {% if link_exibido %}
+        <div class="alert alert-info p-3 mb-3" style="word-break:break-all;background:var(--bg-card-hover);border:1px solid var(--border-color);">
+          <strong>Link de recuperação:</strong><br>
+          <a href="{{ link_exibido }}">{{ link_exibido }}</a>
+          <p class="small mt-2 text-secondary">Copie e abra no navegador. Válido por 1 hora.</p>
+        </div>
+        {% endif %}
         <form method="POST">
           <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
           <div class="mb-3">

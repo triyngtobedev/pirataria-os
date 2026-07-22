@@ -51,7 +51,7 @@ class AuthService:
     def gerar_token_reset(email):
         user = UserRepository.find_by_email(email.lower())
         if not user:
-            return False
+            return False, '',
         token = secrets.token_urlsafe(32)
         user.reset_token = token
         user.reset_token_expiry = datetime.now(timezone.utc) + timedelta(hours=1)
@@ -66,8 +66,8 @@ class AuthService:
         <p>Este link expira em 1 hora.</p>
         <p>Se voce nao solicitou esta recuperacao, ignore este email.</p>
         """
-        enviar_email(email, assunto, corpo)
-        return True
+        enviado = enviar_email(email, assunto, corpo)
+        return enviado, link
 
     @staticmethod
     def resetar_senha(token, nova_senha):

@@ -1,6 +1,7 @@
 import logging
 from flask import Blueprint, render_template, redirect, url_for, request, flash, current_app
 from flask_login import login_user, logout_user, login_required, current_user
+from app import db
 from app.middleware.tenant import inject_studio
 from app.services.auth_service import AuthService
 
@@ -51,12 +52,20 @@ def register():
 
 @auth_bp.route('/forgot', methods=['GET', 'POST'])
 def forgot():
+    link_exibido = None
     if request.method == 'POST':
         email = request.form.get('email', '').strip().lower()
-        AuthService.gerar_token_reset(email)
-        flash('Se o email existir, enviaremos um link de recuperacao.', 'info')
-        return redirect(url_for('auth.login'))
-    return render_template('auth/forgot.html')
+        enviado, link = AuthService.gerar_token_reset(email)
+        if enviado:
+            flash('Link de recuperacao enviado para o email.', 'success')
+            return redirect(url_for('auth.login'))
+        elif link:
+            link_exibido = link
+            flash('Email nao configurado. Use o link abaixo para redefinir.', 'warning')
+        else:
+            flash('Se o email existir, o link sera enviado.', 'info')
+            return redirect(url_for('auth.login'))
+    return render_template('auth/forgot.html', link_exibido=link_exibido)
 
 @auth_bp.route('/reset/<token>', methods=['GET', 'POST'])
 def reset(token):
@@ -70,6 +79,23 @@ def reset(token):
         if sucesso:
             return redirect(url_for('auth.login'))
     return render_template('auth/reset.html', token=token)
+
+@auth_bp.route('/change-password', methods=['GET', 'POST'])
+@login_required
+def change_password():
+    if request.method == 'POST':
+        atual = request.form.get('current_password', '')
+        nova = request.form.get('new_password', '')
+        if not current_user.check_password(atual):
+            flash('Senha atual incorreta.', 'danger')
+        elif len(nova) < 6:
+            flash('Nova senha deve ter no minimo 6 caracteres.', 'danger')
+        else:
+            current_user.set_password(nova)
+            db.session.commit()
+            flash('Senha alterada com sucesso!', 'success')
+            return redirect(url_for('dashboard.dashboard'))
+    return render_template('auth/change_password.html')
 
 @auth_bp.route('/logout')
 @login_required
