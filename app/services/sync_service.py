@@ -91,6 +91,7 @@ def sync_from_google(studio_id):
         criados += _importar_evento(studio_id, eid, summary, description, start_dt, updated)
 
     if integration.tasks_list_id:
+        logger.info('Iniciando sync de tasks para lista %s...', integration.tasks_list_id)
         try:
             tasks = google_service.listar_tarefas(
                 integration, client_id, client_secret,
@@ -106,6 +107,7 @@ def sync_from_google(studio_id):
             except Exception as e:
                 logger.error('Sync tasks falhou completamente: %s', e)
                 tasks = []
+        logger.info('Tasks retornadas: %d', len(tasks))
         if tasks:
             amostra = tasks[0]
             logger.info('Task amostra: id=%s title=%s due=%s notes=%s keys=%s',
