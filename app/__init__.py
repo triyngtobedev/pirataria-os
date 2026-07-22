@@ -48,5 +48,10 @@ def create_app(config_name=None):
             db.session.commit()
         except Exception:
             db.session.rollback()
+        try:
+            db.session.execute(sa_text('ALTER TABLE produtos ADD COLUMN favorito BOOLEAN DEFAULT FALSE'))
+            db.session.commit()
+        except Exception:
+            db.session.rollback()
 
     return app

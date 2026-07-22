@@ -1,19 +1,38 @@
 {% extends "base.html" %}
 {% block title %}Estoque — Pirataria Body Art OS{% endblock %}
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4 section-header">
+<div class="d-flex justify-content-between align-items-center mb-3 section-header">
     <h4 class="gold-text mb-0" style="font-size:1.8rem;"><i class="bi bi-box-seam"></i> Catálogo de Joias</h4>
     <button class="btn btn-pirataria" data-bs-toggle="modal" data-bs-target="#modalAdicionar">
         <i class="bi bi-plus-lg"></i> Nova Joia
     </button>
 </div>
 
+<div class="row g-2 mb-3">
+    <div class="col-md-6">
+        <input type="text" id="buscaJoia" class="form-control form-pirataria" placeholder="🔍 Buscar por nome, material, tipo ou aplicação..." onkeyup="filtrarTabela()">
+    </div>
+    <div class="col-md-3">
+        <select id="filtroStatus" class="form-control form-pirataria" onchange="filtrarTabela()">
+            <option value="">Todos os status</option>
+            <option value="disponivel">Disponível</option>
+            <option value="poucas">Poucas unidades</option>
+            <option value="repor">Repor</option>
+        </select>
+    </div>
+    <div class="col-md-3 d-flex gap-2 align-items-center">
+        <a href="{{ url_for('estoque.listar') }}" class="btn btn-sm {% if not request.args.get('fav') %}btn-pirataria{% else %}btn-outline-pirataria{% endif %}" style="font-size:0.85rem;">Todas</a>
+        <a href="{{ url_for('estoque.listar') }}?fav=1" class="btn btn-sm {% if request.args.get('fav') %}btn-pirataria{% else %}btn-outline-pirataria{% endif %}" style="font-size:0.85rem;"><i class="bi bi-heart-fill" style="color:#e74c3c;"></i> Favoritas</a>
+    </div>
+</div>
+
 <div class="card card-pirataria">
     <div class="card-body p-0">
         <div class="table-responsive">
-            <table class="table table-pirataria mb-0">
+            <table class="table table-pirataria mb-0" id="tabelaJoias">
                 <thead>
                     <tr>
+                        <th style="width:32px;"><i class="bi bi-heart"></i></th>
                         <th>Foto</th>
                         <th>Joia</th>
                         <th>Tipo</th>
@@ -30,7 +49,16 @@
                 <tbody>
                     {% if produtos %}
                         {% for p in produtos %}
-                        <tr>
+                        <tr class="{% if p.favorito %}table-favorito{% endif %}">
+                            <td>
+                                <a href="{{ url_for('estoque.favoritar', id=p.id) }}" class="text-decoration-none">
+                                    {% if p.favorito %}
+                                        <i class="bi bi-heart-fill" style="color:#e74c3c;font-size:1.1rem;"></i>
+                                    {% else %}
+                                        <i class="bi bi-heart" style="color:#bbb;font-size:1.1rem;"></i>
+                                    {% endif %}
+                                </a>
+                            </td>
                             <td>
                                 {% if p.foto %}
                                 <img src="{{ url_for('static', filename='uploads/' + p.foto) }}"
@@ -38,24 +66,24 @@
                                      onclick="verFoto('{{ url_for('static', filename='uploads/' + p.foto) }}', '{{ p.nome.replace("'", "\\'") }}')"
                                      alt="{{ p.nome }}">
                                 {% else %}
-                                <span style="color:#666;font-size:0.7rem;">sem foto</span>
+                                <span style="color:#bbb;font-size:0.7rem;">sem foto</span>
                                 {% endif %}
                             </td>
                             <td><strong class="gold-text">{{ p.nome }}</strong></td>
-                            <td>{{ p.tipo_joia or '—' }}</td>
+                            <td class="td-tipo">{{ p.tipo_joia or '—' }}</td>
                             <td>
                                 {% if p.material %}
-                                    <span class="badge badge-pirataria" style="background:rgba(0,0,0,0.05);color:#333;font-weight:600;">
+                                    <span class="badge badge-pirataria td-material" style="background:rgba(0,0,0,0.05);color:#333;font-weight:600;">
                                         {{ p.material }}
                                     </span>
-                                {% else %}<span style="color:#888;">—</span>{% endif %}
+                                {% else %}<span class="td-material" style="color:#888;">—</span>{% endif %}
                             </td>
-                            <td>{{ p.local_aplicacao or '—' }}</td>
-                            <td class="fw-bold">{{ p.quantidade }}</td>
+                            <td class="td-aplicacao">{{ p.local_aplicacao or '—' }}</td>
+                            <td class="fw-bold td-qtd">{{ p.quantidade }}</td>
                             <td>R$ {{ "%.0f"|format(p.custo) }}</td>
                             <td class="gold-text fw-bold">R$ {{ "%.0f"|format(p.valor_venda) }}</td>
                             <td style="color:#888;">{{ p.local_fisico or '—' }}</td>
-                            <td>
+                            <td class="td-status">
                                 {% if p.quantidade == 0 %}
                                     <span class="status-repor"><i class="bi bi-circle-fill me-1" style="font-size:0.5rem;"></i>Repor</span>
                                 {% elif p.quantidade <= 3 %}
@@ -78,7 +106,7 @@
                         {% endfor %}
                     {% else %}
                         <tr>
-                            <td colspan="11">
+                            <td colspan="12">
                                 <div class="empty-state">
                                     <i class="bi bi-box-seam"></i>
                                     <p class="mt-2">Nenhuma joia cadastrada no catálogo</p>
@@ -92,6 +120,50 @@
         </div>
     </div>
 </div>
+
+<script>
+var somenteFavoritos = {% if request.args.get('fav') %}true{% else %}false{% endif %};
+
+function filtrarTabela() {
+    var busca = document.getElementById('buscaJoia').value.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    var statusFiltro = document.getElementById('filtroStatus').value;
+    var linhas = document.querySelectorAll('#tabelaJoias tbody tr');
+    var visiveis = 0;
+
+    linhas.forEach(function(linha) {
+        var texto = linha.textContent.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        var matchBusca = !busca || texto.indexOf(busca) > -1;
+
+        var coracao = linha.querySelector('td:first-child i');
+        var ehFavorito = coracao && coracao.classList.contains('bi-heart-fill');
+        var matchFav = !somenteFavoritos || ehFavorito;
+
+        var statusCelula = linha.querySelector('.td-status');
+        var statusTexto = statusCelula ? statusCelula.textContent.trim().toLowerCase() : '';
+        var matchStatus = !statusFiltro || statusTexto === statusFiltro;
+
+        if (matchBusca && matchFav && matchStatus) {
+            linha.style.display = '';
+            visiveis++;
+        } else {
+            linha.style.display = 'none';
+        }
+    });
+
+    var msgVazio = document.getElementById('msgSemResultados');
+    if (visiveis === 0) {
+        if (!msgVazio) {
+            msgVazio = document.createElement('tr');
+            msgVazio.id = 'msgSemResultados';
+            msgVazio.innerHTML = '<td colspan="12"><div class="empty-state"><i class="bi bi-search"></i><p class="mt-2">Nenhuma joia encontrada</p></div></td>';
+            document.querySelector('#tabelaJoias tbody').appendChild(msgVazio);
+        }
+        msgVazio.style.display = '';
+    } else if (msgVazio) {
+        msgVazio.style.display = 'none';
+    }
+}
+</script>
 
 <div class="modal fade" id="modalAdicionar" tabindex="-1">
     <div class="modal-dialog modal-lg">

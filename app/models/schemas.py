@@ -39,6 +39,7 @@ class Produto(db.Model):
     valor_venda = db.Column(db.Float, default=0.0)
     local_fisico = db.Column(db.String(200), default='')
     foto = db.Column(db.String(500), default='')
+    favorito = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     studio = db.relationship('Studio', backref='produtos')
 

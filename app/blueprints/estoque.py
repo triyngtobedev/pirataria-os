@@ -29,8 +29,10 @@ def before_request():
 @estoque_bp.route('/')
 @login_required
 def listar():
-    produtos = Produto.query.filter_by(studio_id=current_user.studio_id)\
-        .order_by(Produto.created_at.desc()).all()
+    q = Produto.query.filter_by(studio_id=current_user.studio_id)
+    if request.args.get('fav'):
+        q = q.filter_by(favorito=True)
+    produtos = q.order_by(Produto.favorito.desc(), Produto.created_at.desc()).all()
     return render_template('estoque.html', produtos=produtos)
 
 @estoque_bp.route('/adicionar', methods=['POST'])
@@ -75,6 +77,14 @@ def editar(id):
         p.foto = foto
     db.session.commit()
     flash('Produto atualizado!', 'success')
+    return redirect(url_for('estoque.listar'))
+
+@estoque_bp.route('/favoritar/<int:id>')
+@login_required
+def favoritar(id):
+    p = Produto.query.filter_by(id=id, studio_id=current_user.studio_id).first_or_404()
+    p.favorito = not p.favorito
+    db.session.commit()
     return redirect(url_for('estoque.listar'))
 
 @estoque_bp.route('/excluir/<int:id>')
