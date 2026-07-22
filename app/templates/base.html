@@ -78,39 +78,6 @@
             navigator.serviceWorker.register('{{ url_for("static", filename="sw.js") }}');
         }
 
-        async function inscreverPush() {
-            if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
-                alert('Notificacoes push nao suportadas neste navegador.');
-                return;
-            }
-            try {
-                const reg = await navigator.serviceWorker.ready;
-                let sub = await reg.pushManager.getSubscription();
-                if (sub) {
-                    await sub.unsubscribe();
-                }
-                const resp = await fetch('{{ url_for("notifications.vapid_public_key") }}');
-                const { publicKey } = await resp.json();
-                if (!publicKey) {
-                    alert('Push nao configurado no servidor.');
-                    return;
-                }
-                sub = await reg.pushManager.subscribe({
-                    userVisibleOnly: true,
-                    applicationServerKey: Uint8Array.from(atob(publicKey), c => c.charCodeAt(0)),
-                });
-                await fetch('{{ url_for("notifications.subscribe") }}', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(sub.toJSON()),
-                });
-                alert('Notificacoes ativadas!');
-            } catch (e) {
-                alert('Erro ao ativar notificacoes: ' + e.message);
-            }
-        }
-    </script>
-
         function getTemaAtual() {
             var t = localStorage.getItem('pirataria_theme') || 'system';
             return t;
@@ -143,8 +110,39 @@
             atualizarIcone();
         }
 
-        document.addEventListener('DOMContentLoaded', atualizarIcone);
+        async function inscreverPush() {
+            if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+                alert('Notificacoes push nao suportadas neste navegador.');
+                return;
+            }
+            try {
+                const reg = await navigator.serviceWorker.ready;
+                let sub = await reg.pushManager.getSubscription();
+                if (sub) {
+                    await sub.unsubscribe();
+                }
+                const resp = await fetch('{{ url_for("notifications.vapid_public_key") }}');
+                const data = await resp.json();
+                if (!data.publicKey) {
+                    alert('Push nao configurado no servidor.');
+                    return;
+                }
+                sub = await reg.pushManager.subscribe({
+                    userVisibleOnly: true,
+                    applicationServerKey: Uint8Array.from(atob(data.publicKey), c => c.charCodeAt(0)),
+                });
+                await fetch('{{ url_for("notifications.subscribe") }}', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(sub.toJSON()),
+                });
+                alert('Notificacoes ativadas!');
+            } catch (e) {
+                alert('Erro ao ativar notificacoes: ' + e.message);
+            }
+        }
 
+        document.addEventListener('DOMContentLoaded', atualizarIcone);
         window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function() {
             if (getTemaAtual() === 'system') {
                 document.documentElement.setAttribute('data-theme', getTemaEfetivo());
