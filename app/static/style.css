@@ -471,3 +471,23 @@ input[type="number"]::-webkit-inner-spin-button {
 [data-theme="dark"] .quote-card small {
     color: var(--gold) !important;
 }
+
+.picker-item {
+    background: var(--bg-card) !important;
+    color: var(--text-primary) !important;
+    border-color: var(--border-color) !important;
+    transition: none;
+}
+
+.picker-item:hover {
+    background: var(--bg-card-hover) !important;
+    color: var(--text-primary) !important;
+}
+
+.picker-item strong {
+    color: var(--text-primary);
+}
+
+.picker-item .text-secondary {
+    color: var(--text-muted) !important;
+}
