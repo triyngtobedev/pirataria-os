@@ -125,8 +125,11 @@ def listar_tarefas(integration, client_id, client_secret, tasklist_id, since=Non
     params = {'tasklist': tasklist_id, 'showCompleted': False, 'showHidden': True}
     if since:
         if isinstance(since, datetime):
-            since = since.isoformat()
-        params['updatedMin'] = since
+            if since.tzinfo is None:
+                since = since.replace(tzinfo=timezone.utc)
+            params['updatedMin'] = since.isoformat()
+        else:
+            params['updatedMin'] = since
     tasks = []
     page_token = None
     while True:
