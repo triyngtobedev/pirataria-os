@@ -20,6 +20,11 @@
                         &nbsp;<a href="{{ url_for('calendar.listar_calendarios') }}" class="text-warning small">Trocar</a>
                     </p>
                     <p class="small text-muted mb-2">
+                        <i class="bi bi-check2-square"></i> Lista de Tarefas:
+                        <strong>{{ integration.tasks_list_id or 'Nenhuma' }}</strong>
+                        &nbsp;<a href="{{ url_for('calendar.listar_tasklists') }}" class="text-warning small">Escolher</a>
+                    </p>
+                    <p class="small text-muted mb-2">
                         <i class="bi bi-arrow-repeat"></i> Última sincronia:
                         {% if integration.last_sync_at %}
                             {{ integration.last_sync_at.strftime('%d/%m/%Y %H:%M') }}

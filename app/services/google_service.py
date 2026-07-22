@@ -7,25 +7,14 @@ from googleapiclient.discovery import build
 
 logger = logging.getLogger(__name__)
 
-SCOPES = ['https://www.googleapis.com/auth/calendar']
+SCOPES = [
+    'https://www.googleapis.com/auth/calendar',
+    'https://www.googleapis.com/auth/tasks',
+]
 
 
 def get_calendar_service(integration, client_id, client_secret):
-    creds = Credentials(
-        token=integration.access_token,
-        refresh_token=integration.refresh_token,
-        token_uri='https://oauth2.googleapis.com/token',
-        client_id=client_id,
-        client_secret=client_secret,
-        scopes=SCOPES,
-    )
-    if creds.expired and creds.refresh_token:
-        creds.refresh(Request())
-        integration.access_token = creds.token
-        integration.token_expiry = creds.expiry
-    from app import db
-    db.session.commit()
-    return build('calendar', 'v3', credentials=creds)
+    return build('calendar', 'v3', credentials=_get_creds(integration, client_id, client_secret))
 
 
 def criar_evento(integration, client_id, client_secret, cliente, procedimento='', joia='',
@@ -98,6 +87,57 @@ def excluir_evento(integration, client_id, client_secret, event_id):
         service.events().delete(calendarId=calendar_id, eventId=event_id).execute()
     except Exception as e:
         logger.warning('Erro ao excluir evento %s: %s', event_id, e)
+
+
+def _get_creds(integration, client_id, client_secret):
+    creds = Credentials(
+        token=integration.access_token,
+        refresh_token=integration.refresh_token,
+        token_uri='https://oauth2.googleapis.com/token',
+        client_id=client_id,
+        client_secret=client_secret,
+        scopes=SCOPES,
+    )
+    if creds.expired and creds.refresh_token:
+        creds.refresh(Request())
+        integration.access_token = creds.token
+        integration.token_expiry = creds.expiry
+    from app import db
+    db.session.commit()
+    return creds
+
+
+def get_tasks_service(integration, client_id, client_secret):
+    return build('tasks', 'v1', credentials=_get_creds(integration, client_id, client_secret))
+
+
+def listar_tasklists(integration, client_id, client_secret):
+    service = get_tasks_service(integration, client_id, client_secret)
+    result = service.tasklists().list().execute()
+    return [
+        {'id': tl['id'], 'title': tl.get('title', tl['id'])}
+        for tl in result.get('items', [])
+    ]
+
+
+def listar_tarefas(integration, client_id, client_secret, tasklist_id, since=None):
+    service = get_tasks_service(integration, client_id, client_secret)
+    params = {'tasklist': tasklist_id, 'showCompleted': False, 'showHidden': True}
+    if since:
+        if isinstance(since, datetime):
+            since = since.isoformat()
+        params['updatedMin'] = since
+    tasks = []
+    page_token = None
+    while True:
+        if page_token:
+            params['pageToken'] = page_token
+        resp = service.tasks().list(**params).execute()
+        tasks.extend(resp.get('items', []))
+        page_token = resp.get('nextPageToken')
+        if not page_token:
+            break
+    return tasks
 
 
 def listar_calendarios(integration, client_id, client_secret):

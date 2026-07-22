@@ -81,6 +81,11 @@ def connect():
         flash('Google Calendar não configurado. Configure GOOGLE_CLIENT_ID e GOOGLE_CLIENT_SECRET.', 'danger')
         return redirect(url_for('calendar.settings'))
 
+    integration = CalendarIntegration.query.filter_by(studio_id=current_user.studio_id).first()
+    if integration:
+        db.session.delete(integration)
+        db.session.commit()
+
     flow = _get_flow()
     authorization_url, state = flow.authorization_url(
         access_type='offline',
@@ -166,6 +171,39 @@ def select_calendar(calendar_id):
     ).delete(synchronize_session=False)
     db.session.commit()
     flash(f'Calendário trocado! {deletados} eventos antigos removidos.', 'warning')
+    return redirect(url_for('calendar.settings'))
+
+
+@calendar_bp.route('/calendar/tasklists')
+@login_required
+def listar_tasklists():
+    integration = CalendarIntegration.query.filter_by(studio_id=current_user.studio_id).first()
+    if not integration:
+        flash('Conecte o Google Agenda primeiro.', 'danger')
+        return redirect(url_for('calendar.settings'))
+    try:
+        tasklists = google_service.listar_tasklists(
+            integration,
+            current_app.config['GOOGLE_CLIENT_ID'],
+            current_app.config['GOOGLE_CLIENT_SECRET'],
+        )
+    except Exception as e:
+        logger.error('Erro ao listar listas de tarefas: %s', e)
+        flash('Erro ao listar tarefas. Reconecte sua conta Google.', 'danger')
+        return redirect(url_for('calendar.settings'))
+    return render_template('calendar_tasklists.html', tasklists=tasklists, integration=integration)
+
+
+@calendar_bp.route('/calendar/select_tasks/<path:list_id>')
+@login_required
+def select_tasklist(list_id):
+    integration = CalendarIntegration.query.filter_by(studio_id=current_user.studio_id).first()
+    if not integration:
+        flash('Conecte o Google Agenda primeiro.', 'danger')
+        return redirect(url_for('calendar.settings'))
+    integration.tasks_list_id = list_id
+    db.session.commit()
+    flash('Lista de tarefas selecionada!', 'success')
     return redirect(url_for('calendar.settings'))
 
 

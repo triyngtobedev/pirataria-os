@@ -186,6 +186,7 @@ class CalendarIntegration(db.Model):
     refresh_token = db.Column(db.Text, nullable=False)
     token_expiry = db.Column(db.DateTime, nullable=True)
     calendar_id = db.Column(db.String(500), nullable=True)
+    tasks_list_id = db.Column(db.String(500), nullable=True)
     google_email = db.Column(db.String(200), nullable=True)
     last_sync_at = db.Column(db.DateTime, nullable=True)
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))

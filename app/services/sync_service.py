@@ -10,6 +10,50 @@ from app.services import google_service
 logger = logging.getLogger(__name__)
 
 
+def _importar_evento(studio_id, event_id, summary, description, start_dt, event_updated_str):
+    if not summary and not description:
+        return 0
+
+    existing = Atendimento.query.filter_by(
+        studio_id=studio_id,
+        google_event_id=event_id,
+    ).first()
+
+    dados = _extrair_dados(summary, description)
+    event_updated = None
+    if event_updated_str:
+        try:
+            if isinstance(event_updated_str, str):
+                event_updated = datetime.fromisoformat(event_updated_str.replace('Z', '+00:00'))
+        except (ValueError, TypeError):
+            event_updated = None
+
+    if existing:
+        if event_updated and existing.updated_at and event_updated > existing.updated_at.replace(tzinfo=timezone.utc):
+            for campo in ('cliente', 'procedimento', 'joia_utilizada', 'valor', 'forma_pagamento', 'piercer'):
+                v = dados.get(campo)
+                if v is not None:
+                    setattr(existing, campo, v)
+        return 0
+
+    scheduled = datetime.fromisoformat(start_dt.replace('Z', '+00:00')) if start_dt else None
+    a = Atendimento(
+        studio_id=studio_id,
+        google_event_id=event_id,
+        cliente=dados.get('cliente', summary or 'Sincronizado'),
+        procedimento=dados.get('procedimento', ''),
+        joia_utilizada=dados.get('joia', ''),
+        valor=dados.get('valor', 0),
+        forma_pagamento=dados.get('pagamento', ''),
+        piercer=dados.get('piercer', ''),
+        status='Pago',
+        scheduled_at=scheduled,
+        created_at=datetime.now(timezone.utc),
+    )
+    db.session.add(a)
+    return 1
+
+
 def sync_from_google(studio_id):
     integration = CalendarIntegration.query.filter_by(studio_id=studio_id).first()
     if not integration:
@@ -32,58 +76,34 @@ def sync_from_google(studio_id):
             events = google_service.listar_mudancas(integration, client_id, client_secret, since=None)
         except Exception as e:
             logger.error('Sync falhou completamente: %s', e)
-            return 0, 0
+            events = []
 
     for event in events:
-        event_id = event.get('id')
+        eid = event.get('id')
         summary = event.get('summary', '')
         description = event.get('description', '')
         start = event.get('start', {})
         start_dt = start.get('dateTime') or start.get('date')
+        updated = event.get('updated', '')
+        criados += _importar_evento(studio_id, eid, summary, description, start_dt, updated)
 
-        if not summary and not description:
-            continue
-
-        existing = Atendimento.query.filter_by(
-            studio_id=studio_id,
-            google_event_id=event_id,
-        ).first()
-
-        dados = _extrair_dados(summary, description)
-        event_updated = event.get('updated', '')
-        if event_updated:
-            try:
-                if isinstance(event_updated, str):
-                    event_updated = datetime.fromisoformat(event_updated.replace('Z', '+00:00'))
-            except (ValueError, TypeError):
-                event_updated = None
-
-        if existing:
-            if event_updated and existing.updated_at and event_updated > existing.updated_at.replace(tzinfo=timezone.utc):
-                existing.cliente = dados.get('cliente', existing.cliente)
-                existing.procedimento = dados.get('procedimento', existing.procedimento)
-                existing.joia_utilizada = dados.get('joia', existing.joia_utilizada)
-                existing.valor = dados.get('valor', existing.valor)
-                existing.forma_pagamento = dados.get('pagamento', existing.forma_pagamento)
-                existing.piercer = dados.get('piercer', existing.piercer)
-                atualizados += 1
-        else:
-            scheduled = datetime.fromisoformat(start_dt.replace('Z', '+00:00')) if start_dt else None
-            a = Atendimento(
-                studio_id=studio_id,
-                google_event_id=event_id,
-                cliente=dados.get('cliente', summary or 'Sincronizado'),
-                procedimento=dados.get('procedimento', ''),
-                joia_utilizada=dados.get('joia', ''),
-                valor=dados.get('valor', 0),
-                forma_pagamento=dados.get('pagamento', ''),
-                piercer=dados.get('piercer', ''),
-                status='Pago',
-                scheduled_at=scheduled,
-                created_at=datetime.now(timezone.utc),
+    if integration.tasks_list_id:
+        try:
+            tasks = google_service.listar_tarefas(
+                integration, client_id, client_secret,
+                integration.tasks_list_id, since,
             )
-            db.session.add(a)
-            criados += 1
+        except Exception as e:
+            logger.error('Sync de tasks falhou: %s', e)
+            tasks = []
+
+        for task in tasks:
+            tid = task.get('id')
+            title = task.get('title', '')
+            notes = task.get('notes', '')
+            due = task.get('due', '')
+            updated = task.get('updated', '')
+            criados += _importar_evento(studio_id, tid, title, notes, due, updated)
 
     integration.last_sync_at = datetime.now(timezone.utc)
     db.session.commit()
