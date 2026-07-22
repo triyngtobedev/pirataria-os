@@ -98,6 +98,12 @@ def sync_from_google(studio_id):
         except Exception as e:
             logger.error('Sync de tasks falhou: %s', e)
             tasks = []
+        if tasks:
+            amostra = tasks[0]
+            logger.info('Task amostra: id=%s title=%s due=%s notes=%s keys=%s',
+                        amostra.get('id'), amostra.get('title'),
+                        amostra.get('due'), amostra.get('notes'),
+                        list(amostra.keys()))
         for task in tasks:
             tid = task.get('id')
             title = task.get('title', '')
