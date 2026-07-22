@@ -12,12 +12,12 @@ def upgrade():
     op.create_table('notifications',
         sa.Column('id', sa.Integer(), nullable=False),
         sa.Column('studio_id', sa.Integer(), sa.ForeignKey('studios.id'), nullable=False),
-        sa.Column('tipo', sa.String(50), nullable=False, server_default='novo_agendamento'),
+        sa.Column('tipo', sa.String(50), nullable=False, server_default=sa.text("'novo_agendamento'")),
         sa.Column('titulo', sa.String(200), nullable=False),
-        sa.Column('mensagem', sa.String(500), server_default=''),
-        sa.Column('lida', sa.Boolean(), server_default=sa.text('0')),
-        sa.Column('link', sa.String(500), server_default=''),
-        sa.Column('created_at', sa.DateTime(), server_default=sa.text("(datetime('now'))")),
+        sa.Column('mensagem', sa.String(500), server_default=sa.text("''")),
+        sa.Column('lida', sa.Boolean(), server_default=sa.text('false')),
+        sa.Column('link', sa.String(500), server_default=sa.text("''")),
+        sa.Column('created_at', sa.DateTime(), server_default=sa.text('CURRENT_TIMESTAMP')),
         sa.PrimaryKeyConstraint('id'),
     )
 
