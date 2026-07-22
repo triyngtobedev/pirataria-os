@@ -46,6 +46,8 @@ class User(UserMixin, db.Model):
     updated_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
     deleted_at = db.Column(db.DateTime, nullable=True)
     created_by_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+    reset_token = db.Column(db.String(200), nullable=True, unique=True)
+    reset_token_expiry = db.Column(db.DateTime, nullable=True)
 
     studio = db.relationship('Studio', backref='users')
     created_by = db.relationship('User', remote_side=[id], backref='created_users')

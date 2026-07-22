@@ -49,6 +49,28 @@ def register():
         flash(error or 'Erro ao cadastrar.', 'danger')
     return render_template('auth/register.html')
 
+@auth_bp.route('/forgot', methods=['GET', 'POST'])
+def forgot():
+    if request.method == 'POST':
+        email = request.form.get('email', '').strip().lower()
+        AuthService.gerar_token_reset(email)
+        flash('Se o email existir, enviaremos um link de recuperacao.', 'info')
+        return redirect(url_for('auth.login'))
+    return render_template('auth/forgot.html')
+
+@auth_bp.route('/reset/<token>', methods=['GET', 'POST'])
+def reset(token):
+    if request.method == 'POST':
+        senha = request.form.get('password', '')
+        if len(senha) < 6:
+            flash('Senha deve ter no minimo 6 caracteres.', 'danger')
+            return render_template('auth/reset.html', token=token)
+        sucesso, msg = AuthService.resetar_senha(token, senha)
+        flash(msg, 'success' if sucesso else 'danger')
+        if sucesso:
+            return redirect(url_for('auth.login'))
+    return render_template('auth/reset.html', token=token)
+
 @auth_bp.route('/logout')
 @login_required
 def logout():

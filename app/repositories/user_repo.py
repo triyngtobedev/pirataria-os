@@ -31,6 +31,10 @@ class UserRepository(BaseRepository):
         return studio, user
 
     @classmethod
+    def find_by_reset_token(cls, token):
+        return User.query.filter_by(reset_token=token).first()
+
+    @classmethod
     def list_by_studio(cls, studio_id, active_only=True):
         q = User.query.filter_by(studio_id=studio_id)
         if active_only:

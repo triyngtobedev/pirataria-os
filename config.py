@@ -19,6 +19,11 @@ class Config:
     VAPID_PRIVATE_KEY = os.environ.get('VAPID_PRIVATE_KEY', '')
     VAPID_PUBLIC_KEY = os.environ.get('VAPID_PUBLIC_KEY', '')
     VAPID_CLAIM_EMAIL = os.environ.get('VAPID_CLAIM_EMAIL', 'admin@piratariaos.com')
+    SMTP_HOST = os.environ.get('SMTP_HOST', '')
+    SMTP_PORT = int(os.environ.get('SMTP_PORT', 587))
+    SMTP_USER = os.environ.get('SMTP_USER', '')
+    SMTP_PASS = os.environ.get('SMTP_PASS', '')
+    SMTP_FROM = os.environ.get('SMTP_FROM', '')
 
 
 class ProductionConfig(Config):
