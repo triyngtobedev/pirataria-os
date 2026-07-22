@@ -3,7 +3,17 @@
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-4 section-header">
     <h4 class="gold-text mb-0" style="font-size:1.8rem;"><i class="bi bi-graph-up"></i> Financeiro {{ ano }}</h4>
-    <div>
+    <div class="d-flex gap-2 align-items-center">
+        <select id="ordemFinanceiro" class="form-control form-pirataria" style="width:auto;" onchange="ordenarFinanceiro()">
+            <option value="mes">Mês</option>
+            <option value="mes-inv">Mês invertido</option>
+            <option value="atend-mais">Mais atendimentos</option>
+            <option value="atend-menos">Menos atendimentos</option>
+            <option value="receita-maior">Maior receita</option>
+            <option value="receita-menor">Menor receita</option>
+            <option value="lucro-maior">Maior lucro</option>
+            <option value="lucro-menor">Menor lucro</option>
+        </select>
         <a href="{{ url_for('financeiro.mensal', ano=ano-1) }}" class="btn btn-outline-pirataria btn-sm"><i class="bi bi-chevron-left"></i></a>
         <span class="mx-2 gold-text">{{ ano }}</span>
         <a href="{{ url_for('financeiro.mensal', ano=ano+1) }}" class="btn btn-outline-pirataria btn-sm"><i class="bi bi-chevron-right"></i></a>
@@ -68,7 +78,7 @@
                 </thead>
                 <tbody>
                     {% for m in meses %}
-                    <tr>
+                    <tr data-idx="{{ loop.index0 }}">
                         <td><strong class="gold-text">{{ m.nome_mes }}</strong></td>
                         <td>{{ m.atendimentos }}</td>
                         <td style="color:var(--green-accent);font-weight:600;">R$ {{ "%.0f"|format(m.receita) }}</td>
@@ -96,4 +106,32 @@
         </div>
     </div>
 </div>
+
+<script>
+function ordenarFinanceiro() {
+    var ordem = document.getElementById('ordemFinanceiro').value;
+    var tbody = document.querySelector('.table-pirataria tbody');
+    var rows = Array.from(tbody.querySelectorAll('tr'));
+    var dataRows = rows.filter(function(r) { return r.querySelector('td') && !r.querySelector('.empty-state'); });
+    var outrasRows = rows.filter(function(r) { return !dataRows.includes(r); });
+
+    dataRows.sort(function(a, b) {
+        var valA, valB;
+        switch (ordem) {
+            case 'mes': return parseInt(a.dataset.idx) - parseInt(b.dataset.idx);
+            case 'mes-inv': return parseInt(b.dataset.idx) - parseInt(a.dataset.idx);
+            case 'atend-mais': return parseInt(b.cells[1].textContent) - parseInt(a.cells[1].textContent);
+            case 'atend-menos': return parseInt(a.cells[1].textContent) - parseInt(b.cells[1].textContent);
+            case 'receita-maior': return parseFloat(b.cells[2].textContent.replace('R$', '').trim()) - parseFloat(a.cells[2].textContent.replace('R$', '').trim());
+            case 'receita-menor': return parseFloat(a.cells[2].textContent.replace('R$', '').trim()) - parseFloat(b.cells[2].textContent.replace('R$', '').trim());
+            case 'lucro-maior': return parseFloat(b.cells[4].textContent.replace('R$', '').trim()) - parseFloat(a.cells[4].textContent.replace('R$', '').trim());
+            case 'lucro-menor': return parseFloat(a.cells[4].textContent.replace('R$', '').trim()) - parseFloat(b.cells[4].textContent.replace('R$', '').trim());
+            default: return 0;
+        }
+    });
+
+    dataRows.forEach(function(r) { tbody.appendChild(r); });
+    outrasRows.forEach(function(r) { tbody.appendChild(r); });
+}
+</script>
 {% endblock %}

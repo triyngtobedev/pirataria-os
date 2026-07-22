@@ -9,10 +9,10 @@
 </div>
 
 <div class="row g-2 mb-3">
-    <div class="col-md-6">
+    <div class="col-md-4">
         <input type="text" id="buscaJoia" class="form-control form-pirataria" placeholder="🔍 Buscar por nome, material, tipo ou aplicação..." onkeyup="filtrarTabela()">
     </div>
-    <div class="col-md-3">
+    <div class="col-md-2">
         <select id="filtroStatus" class="form-control form-pirataria" onchange="filtrarTabela()">
             <option value="">Todos os status</option>
             <option value="disponivel">Disponível</option>
@@ -23,6 +23,20 @@
     <div class="col-md-3 d-flex gap-2 align-items-center">
         <a href="{{ url_for('estoque.listar') }}" class="btn btn-sm {% if not request.args.get('fav') %}btn-pirataria{% else %}btn-outline-pirataria{% endif %}" style="font-size:0.85rem;">Todas</a>
         <a href="{{ url_for('estoque.listar') }}?fav=1" class="btn btn-sm {% if request.args.get('fav') %}btn-pirataria{% else %}btn-outline-pirataria{% endif %}" style="font-size:0.85rem;"><i class="bi bi-heart-fill" style="color:#e74c3c;"></i> Favoritas</a>
+    </div>
+    <div class="col-md-3">
+        <select id="ordemJoias" class="form-control form-pirataria" onchange="ordenarTabela()">
+            <option value="novo">Mais novo</option>
+            <option value="antigo">Mais antigo</option>
+            <option value="nome-az">Nome A-Z</option>
+            <option value="nome-za">Nome Z-A</option>
+            <option value="qtd-menor">Menor quantidade</option>
+            <option value="qtd-maior">Maior quantidade</option>
+            <option value="custo-menor">Menor custo</option>
+            <option value="custo-maior">Maior custo</option>
+            <option value="venda-menor">Menor venda</option>
+            <option value="venda-maior">Maior venda</option>
+        </select>
     </div>
 </div>
 
@@ -49,7 +63,7 @@
                 <tbody>
                     {% if produtos %}
                         {% for p in produtos %}
-                        <tr class="{% if p.favorito %}table-favorito{% endif %}">
+                        <tr class="{% if p.favorito %}table-favorito{% endif %}" data-idx="{{ loop.index0 }}">
                             <td>
                                 <a href="{{ url_for('estoque.favoritar', id=p.id) }}" class="text-decoration-none">
                                     {% if p.favorito %}
@@ -69,7 +83,7 @@
                                 <span style="color:var(--text-muted);font-size:0.7rem;">sem foto</span>
                                 {% endif %}
                             </td>
-                            <td><strong class="gold-text">{{ p.nome }}</strong></td>
+                            <td><strong class="gold-text td-nome">{{ p.nome }}</strong></td>
                             <td class="td-tipo">{{ p.tipo_joia or '—' }}</td>
                             <td>
                                 {% if p.material %}
@@ -162,6 +176,34 @@ function filtrarTabela() {
     } else if (msgVazio) {
         msgVazio.style.display = 'none';
     }
+}
+
+function ordenarTabela() {
+    var ordem = document.getElementById('ordemJoias').value;
+    var tbody = document.querySelector('#tabelaJoias tbody');
+    var rows = Array.from(tbody.querySelectorAll('tr'));
+    var dataRows = rows.filter(function(r) { return r.querySelector('td') && !r.querySelector('.empty-state') && r.style.display !== 'none'; });
+    var outrasRows = rows.filter(function(r) { return !dataRows.includes(r); });
+
+    dataRows.sort(function(a, b) {
+        var valA, valB;
+        switch (ordem) {
+            case 'novo': return parseInt(a.dataset.idx) - parseInt(b.dataset.idx);
+            case 'antigo': return parseInt(b.dataset.idx) - parseInt(a.dataset.idx);
+            case 'nome-az': return a.cells[2].textContent.trim().localeCompare(b.cells[2].textContent.trim());
+            case 'nome-za': return b.cells[2].textContent.trim().localeCompare(a.cells[2].textContent.trim());
+            case 'qtd-menor': return parseInt(a.cells[6].textContent) - parseInt(b.cells[6].textContent);
+            case 'qtd-maior': return parseInt(b.cells[6].textContent) - parseInt(a.cells[6].textContent);
+            case 'custo-menor': return parseFloat(a.cells[7].textContent.replace('R$', '').trim()) - parseFloat(b.cells[7].textContent.replace('R$', '').trim());
+            case 'custo-maior': return parseFloat(b.cells[7].textContent.replace('R$', '').trim()) - parseFloat(a.cells[7].textContent.replace('R$', '').trim());
+            case 'venda-menor': return parseFloat(a.cells[8].textContent.replace('R$', '').trim()) - parseFloat(b.cells[8].textContent.replace('R$', '').trim());
+            case 'venda-maior': return parseFloat(b.cells[8].textContent.replace('R$', '').trim()) - parseFloat(a.cells[8].textContent.replace('R$', '').trim());
+            default: return 0;
+        }
+    });
+
+    dataRows.forEach(function(r) { tbody.appendChild(r); });
+    outrasRows.forEach(function(r) { tbody.appendChild(r); });
 }
 </script>
 

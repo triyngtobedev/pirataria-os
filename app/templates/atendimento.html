@@ -3,9 +3,19 @@
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-4 section-header">
     <h4 class="gold-text mb-0" style="font-size:1.8rem;"><i class="bi bi-clipboard-check"></i> Atendimentos</h4>
-    <button class="btn btn-pirataria" data-bs-toggle="modal" data-bs-target="#modalNovoAtendimento">
-        <i class="bi bi-plus-lg"></i> Novo Atendimento
-    </button>
+    <div class="d-flex gap-2 align-items-center">
+        <select id="ordemAtendimentos" class="form-control form-pirataria" style="width:auto;" onchange="ordenarAtendimentos()">
+            <option value="novo">Mais novo</option>
+            <option value="antigo">Mais antigo</option>
+            <option value="cliente-az">Cliente A-Z</option>
+            <option value="cliente-za">Cliente Z-A</option>
+            <option value="valor-maior">Maior valor</option>
+            <option value="valor-menor">Menor valor</option>
+        </select>
+        <button class="btn btn-pirataria" data-bs-toggle="modal" data-bs-target="#modalNovoAtendimento">
+            <i class="bi bi-plus-lg"></i> Novo Atendimento
+        </button>
+    </div>
 </div>
 
 <div class="card card-pirataria">
@@ -28,7 +38,7 @@
                 <tbody>
                     {% if atendimentos %}
                         {% for at in atendimentos %}
-                        <tr>
+                        <tr data-idx="{{ loop.index0 }}">
                             <td><span class="badge badge-pirataria" style="background:var(--badge-bg);color:var(--gold);">#{{ at.id }}</span></td>
                             <td><strong>{{ at.cliente }}</strong></td>
                             <td>{{ at.procedimento or '—' }}</td>
@@ -117,7 +127,7 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Piercer</label>
-                        <input type="text" name="piercer" class="form-control form-pirataria" placeholder="Ex: Padrinho">
+                        <input type="text" name="piercer" class="form-control form-pirataria" placeholder="Ex: Digão">
                     </div>
                 </div>
                 <div class="modal-footer border-secondary">
@@ -128,4 +138,29 @@
         </div>
     </div>
 </div>
+
+<script>
+function ordenarAtendimentos() {
+    var ordem = document.getElementById('ordemAtendimentos').value;
+    var tbody = document.querySelector('.table-pirataria tbody');
+    var rows = Array.from(tbody.querySelectorAll('tr'));
+    var dataRows = rows.filter(function(r) { return r.querySelector('td') && !r.querySelector('.empty-state'); });
+    var outrasRows = rows.filter(function(r) { return !dataRows.includes(r); });
+
+    dataRows.sort(function(a, b) {
+        switch (ordem) {
+            case 'novo': return parseInt(a.dataset.idx) - parseInt(b.dataset.idx);
+            case 'antigo': return parseInt(b.dataset.idx) - parseInt(a.dataset.idx);
+            case 'cliente-az': return a.cells[1].textContent.trim().localeCompare(b.cells[1].textContent.trim());
+            case 'cliente-za': return b.cells[1].textContent.trim().localeCompare(a.cells[1].textContent.trim());
+            case 'valor-maior': return parseFloat(b.cells[4].textContent.replace('R$', '').trim()) - parseFloat(a.cells[4].textContent.replace('R$', '').trim());
+            case 'valor-menor': return parseFloat(a.cells[4].textContent.replace('R$', '').trim()) - parseFloat(b.cells[4].textContent.replace('R$', '').trim());
+            default: return 0;
+        }
+    });
+
+    dataRows.forEach(function(r) { tbody.appendChild(r); });
+    outrasRows.forEach(function(r) { tbody.appendChild(r); });
+}
+</script>
 {% endblock %}

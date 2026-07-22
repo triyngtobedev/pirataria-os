@@ -3,9 +3,21 @@
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-4 section-header">
     <h4 class="gold-text mb-0" style="font-size:1.8rem;"><i class="bi bi-capsule"></i> Insumos</h4>
-    <button class="btn btn-pirataria" data-bs-toggle="modal" data-bs-target="#modalAdicionar">
-        <i class="bi bi-plus-lg"></i> Novo Insumo
-    </button>
+    <div class="d-flex gap-2 align-items-center">
+        <select id="ordemInsumos" class="form-control form-pirataria" style="width:auto;" onchange="ordenarInsumos()">
+            <option value="novo">Mais novo</option>
+            <option value="antigo">Mais antigo</option>
+            <option value="nome-az">Nome A-Z</option>
+            <option value="nome-za">Nome Z-A</option>
+            <option value="qtd-menor">Menor quantidade</option>
+            <option value="qtd-maior">Maior quantidade</option>
+            <option value="custo-menor">Menor custo unit.</option>
+            <option value="custo-maior">Maior custo unit.</option>
+        </select>
+        <button class="btn btn-pirataria" data-bs-toggle="modal" data-bs-target="#modalAdicionar">
+            <i class="bi bi-plus-lg"></i> Novo Insumo
+        </button>
+    </div>
 </div>
 
 <div class="card card-pirataria">
@@ -27,7 +39,7 @@
                 <tbody>
                     {% if insumos %}
                         {% for i in insumos %}
-                        <tr>
+                        <tr data-idx="{{ loop.index0 }}">
                             <td><strong class="gold-text">{{ i.nome }}</strong></td>
                             <td><span>{{ i.categoria or '—' }}</span></td>
                             <td class="fw-bold">{{ i.quantidade }}</td>
@@ -185,6 +197,31 @@ function editarInsumo(id, nome, categoria, qtd, unidade, custo, fornecedor, loca
     document.getElementById('editFornecedor').value = fornecedor;
     document.getElementById('editLocal').value = local;
     new bootstrap.Modal(document.getElementById('modalEditar')).show();
+}
+
+function ordenarInsumos() {
+    var ordem = document.getElementById('ordemInsumos').value;
+    var tbody = document.querySelector('.table-pirataria tbody');
+    var rows = Array.from(tbody.querySelectorAll('tr'));
+    var dataRows = rows.filter(function(r) { return r.querySelector('td') && !r.querySelector('.empty-state'); });
+    var outrasRows = rows.filter(function(r) { return !dataRows.includes(r); });
+
+    dataRows.sort(function(a, b) {
+        switch (ordem) {
+            case 'novo': return parseInt(a.dataset.idx) - parseInt(b.dataset.idx);
+            case 'antigo': return parseInt(b.dataset.idx) - parseInt(a.dataset.idx);
+            case 'nome-az': return a.cells[0].textContent.trim().localeCompare(b.cells[0].textContent.trim());
+            case 'nome-za': return b.cells[0].textContent.trim().localeCompare(a.cells[0].textContent.trim());
+            case 'qtd-menor': return parseFloat(a.cells[2].textContent) - parseFloat(b.cells[2].textContent);
+            case 'qtd-maior': return parseFloat(b.cells[2].textContent) - parseFloat(a.cells[2].textContent);
+            case 'custo-menor': return parseFloat(a.cells[4].textContent.replace('R$', '').trim()) - parseFloat(b.cells[4].textContent.replace('R$', '').trim());
+            case 'custo-maior': return parseFloat(b.cells[4].textContent.replace('R$', '').trim()) - parseFloat(a.cells[4].textContent.replace('R$', '').trim());
+            default: return 0;
+        }
+    });
+
+    dataRows.forEach(function(r) { tbody.appendChild(r); });
+    outrasRows.forEach(function(r) { tbody.appendChild(r); });
 }
 </script>
 {% endblock %}
