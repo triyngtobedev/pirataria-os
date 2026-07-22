@@ -44,6 +44,7 @@ def create_app(config_name=None):
     from app.blueprints.insumos import insumos_bp
     from app.blueprints.financeiro import financeiro_bp
     from app.blueprints.calendar import calendar_bp
+    from app.blueprints.notifications import notifications_bp
 
     app.register_blueprint(auth_bp, url_prefix='/auth')
     app.register_blueprint(dashboard_bp)
@@ -52,6 +53,7 @@ def create_app(config_name=None):
     app.register_blueprint(insumos_bp, url_prefix='/insumos')
     app.register_blueprint(financeiro_bp, url_prefix='/financeiro')
     app.register_blueprint(calendar_bp)
+    app.register_blueprint(notifications_bp)
 
     @app.errorhandler(500)
     def internal_error(error):

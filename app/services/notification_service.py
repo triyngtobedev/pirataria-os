@@ -1,6 +1,7 @@
 from datetime import datetime, timezone
 from app import db
 from app.models.schemas import Notification
+from app.services.push_service import send_push
 
 
 class NotificationService:
@@ -16,6 +17,11 @@ class NotificationService:
         )
         db.session.add(n)
         db.session.commit()
+        try:
+            send_push(studio_id, titulo, mensagem, link)
+        except Exception as e:
+            import logging
+            logging.getLogger(__name__).warning('Erro ao enviar push: %s', e)
         return n
 
     @staticmethod

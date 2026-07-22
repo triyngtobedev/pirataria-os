@@ -223,6 +223,20 @@ class Notification(db.Model):
     studio = db.relationship('Studio', backref='notifications')
 
 
+class PushSubscription(db.Model):
+    __tablename__ = 'push_subscriptions'
+    id = db.Column(db.Integer, primary_key=True)
+    studio_id = db.Column(db.Integer, db.ForeignKey('studios.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    endpoint = db.Column(db.Text, nullable=False)
+    p256dh = db.Column(db.String(500), nullable=False)
+    auth = db.Column(db.String(500), nullable=False)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+
+    studio = db.relationship('Studio', backref='push_subscriptions')
+    user = db.relationship('User', backref='push_subscriptions')
+
+
 @login_manager.user_loader
 def load_user(user_id):
     return db.session.get(User, int(user_id))

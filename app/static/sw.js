@@ -36,3 +36,35 @@ self.addEventListener('activate', event => {
     )
   );
 });
+
+self.addEventListener('push', event => {
+  let data = { title: 'Pirataria OS', body: '', icon: '/static/icons/icon-192.svg' };
+  if (event.data) {
+    try {
+      data = event.data.json();
+    } catch (e) {
+      data.body = event.data.text();
+    }
+  }
+  event.waitUntil(
+    self.registration.showNotification(data.title, {
+      body: data.body,
+      icon: data.icon || '/static/icons/icon-192.svg',
+      badge: data.badge || '/static/icons/icon-192.svg',
+      data: data.data || {},
+    })
+  );
+});
+
+self.addEventListener('notificationclick', event => {
+  event.notification.close();
+  const url = (event.notification.data && event.notification.data.url) || '/dashboard';
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then(windowClients => {
+      for (const client of windowClients) {
+        if (client.url === url && 'focus' in client) return client.focus();
+      }
+      return clients.openWindow(url);
+    })
+  );
+});

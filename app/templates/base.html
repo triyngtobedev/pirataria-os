@@ -45,6 +45,7 @@
                     <li class="nav-item"><a class="nav-link {% if '/atendimento' in request.path %}active{% endif %}" href="{{ url_for('atendimento.listar') }}"><i class="bi bi-clipboard-check"></i>Atendimentos</a></li>
                     <li class="nav-item"><a class="nav-link {% if '/financeiro' in request.path %}active{% endif %}" href="{{ url_for('financeiro.mensal') }}"><i class="bi bi-graph-up"></i>Financeiro</a></li>
                     <li class="nav-item"><a class="nav-link {% if '/agenda' in request.path or '/calendar' in request.path %}active{% endif %}" href="{{ url_for('calendar.agenda') }}"><i class="bi bi-calendar-event"></i>Agenda</a></li>
+                    <li class="nav-item"><button class="nav-link theme-btn" onclick="inscreverPush()" title="Ativar notificacoes" style="border:none;background:transparent;padding:0.5rem 1rem;"><i class="bi bi-bell"></i></button></li>
                     <li class="nav-item"><button class="nav-link theme-btn" onclick="alternarTema()" title="Alternar tema" style="border:none;background:transparent;padding:0.5rem 1rem;"><i class="bi" id="iconeTema"></i></button></li>
                     <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.logout') }}"><i class="bi bi-box-arrow-right"></i>Sair</a></li>
                 </ul>
@@ -76,6 +77,39 @@
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('{{ url_for("static", filename="sw.js") }}');
         }
+
+        async function inscreverPush() {
+            if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+                alert('Notificacoes push nao suportadas neste navegador.');
+                return;
+            }
+            try {
+                const reg = await navigator.serviceWorker.ready;
+                let sub = await reg.pushManager.getSubscription();
+                if (sub) {
+                    await sub.unsubscribe();
+                }
+                const resp = await fetch('{{ url_for("notifications.vapid_public_key") }}');
+                const { publicKey } = await resp.json();
+                if (!publicKey) {
+                    alert('Push nao configurado no servidor.');
+                    return;
+                }
+                sub = await reg.pushManager.subscribe({
+                    userVisibleOnly: true,
+                    applicationServerKey: Uint8Array.from(atob(publicKey), c => c.charCodeAt(0)),
+                });
+                await fetch('{{ url_for("notifications.subscribe") }}', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(sub.toJSON()),
+                });
+                alert('Notificacoes ativadas!');
+            } catch (e) {
+                alert('Erro ao ativar notificacoes: ' + e.message);
+            }
+        }
+    </script>
 
         function getTemaAtual() {
             var t = localStorage.getItem('pirataria_theme') || 'system';
