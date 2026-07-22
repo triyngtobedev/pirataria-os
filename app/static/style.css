@@ -58,7 +58,7 @@ body {
 h1, h2, h3, h4, h5, h6,
 .gold-text, .navbar-brand, .display-font {
     font-family: 'Pirata One', serif;
-    letter-spacing: 5px;
+    letter-spacing: 4px;
 }
 
 h1 { font-size: 2.4rem; }
@@ -163,7 +163,7 @@ h6 { font-size: 1.1rem; }
     font-weight: 700;
     color: var(--text-primary);
     font-family: 'Pirata One', serif;
-    letter-spacing: 4px;
+    letter-spacing: 3px;
 }
 
 .dashboard-icon {
@@ -174,7 +174,7 @@ h6 { font-size: 1.1rem; }
 .gold-text {
     color: var(--gold);
     font-family: 'Pirata One', serif;
-    letter-spacing: 4px;
+    letter-spacing: 3px;
     font-size: 1.1rem;
 }
 
@@ -185,7 +185,7 @@ h6 { font-size: 1.1rem; }
     font-weight: 700;
     font-family: 'Pirata One', serif;
     font-size: 1.15rem;
-    letter-spacing: 4px;
+    letter-spacing: 3px;
     padding: 0.6rem 1.8rem;
     border-radius: 4px;
     transition: all 0.2s;
@@ -205,7 +205,7 @@ h6 { font-size: 1.1rem; }
     color: var(--gold);
     font-weight: 700;
     font-family: 'Pirata One', serif;
-    letter-spacing: 4px;
+    letter-spacing: 3px;
     font-size: 1.05rem;
     border-radius: 4px;
     text-transform: uppercase;
@@ -389,7 +389,7 @@ h6 { font-size: 1.1rem; }
 
 .login-title {
     font-size: 2rem;
-    letter-spacing: 6px;
+    letter-spacing: 5px;
 }
 
 /* Subtitle serif */
