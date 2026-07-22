@@ -1,0 +1,190 @@
+{% extends "base.html" %}
+{% block title %}Insumos — Pirataria Body Art OS{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4 section-header">
+    <h4 class="gold-text mb-0" style="font-size:1.8rem;"><i class="bi bi-capsule"></i> Insumos</h4>
+    <button class="btn btn-pirataria" data-bs-toggle="modal" data-bs-target="#modalAdicionar">
+        <i class="bi bi-plus-lg"></i> Novo Insumo
+    </button>
+</div>
+
+<div class="card card-pirataria">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-pirataria mb-0">
+                <thead>
+                    <tr>
+                        <th>Insumo</th>
+                        <th>Categoria</th>
+                        <th>Qtd</th>
+                        <th>Unidade</th>
+                        <th>Custo Unt.</th>
+                        <th>Fornecedor</th>
+                        <th>Local</th>
+                        <th style="width:70px;"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if insumos %}
+                        {% for i in insumos %}
+                        <tr>
+                            <td><strong class="gold-text">{{ i.nome }}</strong></td>
+                            <td><span style="color:#f0f0f0;">{{ i.categoria or '—' }}</span></td>
+                            <td class="fw-bold" style="color:#f0f0f0;">{{ i.quantidade }}</td>
+                            <td style="color:#999999;">{{ i.unidade }}</td>
+                            <td style="color:#f0f0f0;">R$ {{ "%.2f"|format(i.custo_unitario) }}</td>
+                            <td style="color:#999999;">{{ i.fornecedor or '—' }}</td>
+                            <td style="color:#999999;">{{ i.local_fisico or '—' }}</td>
+                            <td>
+                                <div class="d-flex gap-1">
+                                    <button class="btn btn-sm btn-outline-pirataria py-0 px-2" onclick="editarInsumo({{ i.id }}, '{{ i.nome.replace("'", "\\'") }}', '{{ i.categoria.replace("'", "\\'") }}', {{ i.quantidade }}, '{{ i.unidade }}', {{ i.custo_unitario }}, '{{ i.fornecedor.replace("'", "\\'") }}', '{{ i.local_fisico.replace("'", "\\'") }}')">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                    <a href="{{ url_for('insumos.excluir', id=i.id) }}" class="btn btn-sm" style="border:1px solid var(--red-accent);color:var(--red-accent);border-radius:4px;padding:0 8px;" onclick="return confirm('Remover {{ i.nome }}?')">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="8">
+                                <div class="empty-state">
+                                    <i class="bi bi-capsule"></i>
+                                    <p class="mt-2">Nenhum insumo cadastrado</p>
+                                    <button class="btn btn-pirataria btn-sm" data-bs-toggle="modal" data-bs-target="#modalAdicionar">Adicionar Primeiro Insumo</button>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalAdicionar" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content" style="background:var(--bg-card);color:var(--text-primary);border:1px solid var(--border-color);">
+            <div class="modal-header border-secondary">
+                <h5 class="gold-text mb-0"><i class="bi bi-plus-circle"></i> Novo Insumo</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" action="{{ url_for('insumos.adicionar') }}">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label gold-text small">Nome do Insumo *</label>
+                        <input type="text" name="nome" class="form-control form-pirataria" placeholder="Ex: Luva Cirúrgica M" required>
+                    </div>
+                    <div class="row g-3 mb-3">
+                        <div class="col-4">
+                            <label class="form-label gold-text small">Categoria</label>
+                            <input type="text" name="categoria" class="form-control form-pirataria" placeholder="Ex: EPI, Antisséptico" list="catList">
+                            <datalist id="catList">
+                                <option value="EPI"><option value="Antisséptico"><option value="Agulha">
+                                <option value="Embalagem"><option value="Higiene"><option value="Descartável">
+                            </datalist>
+                        </div>
+                        <div class="col-4">
+                            <label class="form-label gold-text small">Quantidade</label>
+                            <input type="number" name="quantidade" class="form-control form-pirataria" value="1" step="0.1" min="0">
+                        </div>
+                        <div class="col-4">
+                            <label class="form-label gold-text small">Unidade</label>
+                            <input type="text" name="unidade" class="form-control form-pirataria" value="unidade" list="unidList">
+                            <datalist id="unidList">
+                                <option value="unidade"><option value="par"><option value="ml">
+                                <option value="g"><option value="cx"><option value="pct">
+                            </datalist>
+                        </div>
+                    </div>
+                    <div class="row g-3 mb-3">
+                        <div class="col-4">
+                            <label class="form-label gold-text small">Custo Unitário (R$)</label>
+                            <input type="number" name="custo_unitario" class="form-control form-pirataria" value="0" step="0.01" min="0">
+                        </div>
+                        <div class="col-4">
+                            <label class="form-label gold-text small">Fornecedor</label>
+                            <input type="text" name="fornecedor" class="form-control form-pirataria" placeholder="Ex: Distribuidora A">
+                        </div>
+                        <div class="col-4">
+                            <label class="form-label gold-text small">Local Físico</label>
+                            <input type="text" name="local_fisico" class="form-control form-pirataria" placeholder="Ex: Armário 1">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-secondary">
+                    <button type="button" class="btn btn-outline-pirataria" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-pirataria"><i class="bi bi-check-lg"></i> Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalEditar" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content" style="background:var(--bg-card);color:var(--text-primary);border:1px solid var(--border-color);">
+            <div class="modal-header border-secondary">
+                <h5 class="gold-text mb-0"><i class="bi bi-pencil"></i> Editar Insumo</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" id="formEditar">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label gold-text small">Nome do Insumo *</label>
+                        <input type="text" name="nome" id="editNome" class="form-control form-pirataria" required>
+                    </div>
+                    <div class="row g-3 mb-3">
+                        <div class="col-4">
+                            <label class="form-label gold-text small">Categoria</label>
+                            <input type="text" name="categoria" id="editCategoria" class="form-control form-pirataria" list="catList">
+                        </div>
+                        <div class="col-4">
+                            <label class="form-label gold-text small">Quantidade</label>
+                            <input type="number" name="quantidade" id="editQuantidade" class="form-control form-pirataria" step="0.1" min="0">
+                        </div>
+                        <div class="col-4">
+                            <label class="form-label gold-text small">Unidade</label>
+                            <input type="text" name="unidade" id="editUnidade" class="form-control form-pirataria" list="unidList">
+                        </div>
+                    </div>
+                    <div class="row g-3 mb-3">
+                        <div class="col-4">
+                            <label class="form-label gold-text small">Custo Unitário (R$)</label>
+                            <input type="number" name="custo_unitario" id="editCusto" class="form-control form-pirataria" step="0.01" min="0">
+                        </div>
+                        <div class="col-4">
+                            <label class="form-label gold-text small">Fornecedor</label>
+                            <input type="text" name="fornecedor" id="editFornecedor" class="form-control form-pirataria">
+                        </div>
+                        <div class="col-4">
+                            <label class="form-label gold-text small">Local Físico</label>
+                            <input type="text" name="local_fisico" id="editLocal" class="form-control form-pirataria">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-secondary">
+                    <button type="button" class="btn btn-outline-pirataria" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-pirataria"><i class="bi bi-check-lg"></i> Atualizar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function editarInsumo(id, nome, categoria, qtd, unidade, custo, fornecedor, local) {
+    document.getElementById('formEditar').action = '{{ url_for("insumos.editar", id=0) }}'.replace('0', id);
+    document.getElementById('editNome').value = nome;
+    document.getElementById('editCategoria').value = categoria;
+    document.getElementById('editQuantidade').value = qtd;
+    document.getElementById('editUnidade').value = unidade;
+    document.getElementById('editCusto').value = custo;
+    document.getElementById('editFornecedor').value = fornecedor;
+    document.getElementById('editLocal').value = local;
+    new bootstrap.Modal(document.getElementById('modalEditar')).show();
+}
+</script>
+{% endblock %}

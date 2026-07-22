@@ -14,6 +14,7 @@
             <table class="table table-pirataria mb-0">
                 <thead>
                     <tr>
+                        <th>Foto</th>
                         <th>Joia</th>
                         <th>Tipo</th>
                         <th>Material</th>
@@ -30,18 +31,28 @@
                     {% if produtos %}
                         {% for p in produtos %}
                         <tr>
+                            <td>
+                                {% if p.foto %}
+                                <img src="{{ url_for('static', filename='uploads/' + p.foto) }}"
+                                     class="rounded" style="width:40px;height:40px;object-fit:cover;cursor:pointer;border:1px solid var(--gold-dark);"
+                                     onclick="verFoto('{{ url_for('static', filename='uploads/' + p.foto) }}', '{{ p.nome.replace("'", "\\'") }}')"
+                                     alt="{{ p.nome }}">
+                                {% else %}
+                                <span style="color:#666;font-size:0.7rem;">sem foto</span>
+                                {% endif %}
+                            </td>
                             <td><strong class="gold-text">{{ p.nome }}</strong></td>
-                            <td style="color:#ffffff;">{{ p.tipo_joia or '—' }}</td>
+                            <td style="color:#e0e0e0;">{{ p.tipo_joia or '—' }}</td>
                             <td>
                                 {% if p.material %}
-                                    <span class="badge badge-pirataria" style="background:rgba(255,255,255,0.1);color:#ffffff;font-weight:600;">
+                                    <span class="badge badge-pirataria" style="background:rgba(255,255,255,0.1);color:#e0e0e0;font-weight:600;">
                                         {{ p.material }}
                                     </span>
-                                {% else %}<span style="color:#ffffff;">—</span>{% endif %}
+                                {% else %}<span style="color:#e0e0e0;">—</span>{% endif %}
                             </td>
-                            <td style="color:#ffffff;">{{ p.local_aplicacao or '—' }}</td>
-                            <td class="fw-bold" style="color:#ffffff;">{{ p.quantidade }}</td>
-                            <td style="color:#ffffff;">R$ {{ "%.0f"|format(p.custo) }}</td>
+                            <td style="color:#e0e0e0;">{{ p.local_aplicacao or '—' }}</td>
+                            <td class="fw-bold" style="color:#e0e0e0;">{{ p.quantidade }}</td>
+                            <td style="color:#e0e0e0;">R$ {{ "%.0f"|format(p.custo) }}</td>
                             <td class="gold-text fw-bold">R$ {{ "%.0f"|format(p.valor_venda) }}</td>
                             <td style="color:#999999;">{{ p.local_fisico or '—' }}</td>
                             <td>
@@ -67,7 +78,7 @@
                         {% endfor %}
                     {% else %}
                         <tr>
-                            <td colspan="10">
+                            <td colspan="11">
                                 <div class="empty-state">
                                     <i class="bi bi-box-seam"></i>
                                     <p class="mt-2">Nenhuma joia cadastrada no catálogo</p>
@@ -89,7 +100,7 @@
                 <h5 class="gold-text mb-0"><i class="bi bi-plus-circle"></i> Nova Joia</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
-            <form method="POST" action="{{ url_for('estoque.adicionar') }}">
+            <form method="POST" action="{{ url_for('estoque.adicionar') }}" enctype="multipart/form-data">
                 <div class="modal-body">
                     <div class="mb-3">
                         <label class="form-label gold-text small">Nome da Joia *</label>
@@ -124,17 +135,21 @@
                         </div>
                     </div>
                     <div class="row g-3 mb-3">
-                        <div class="col-4">
+                        <div class="col-3">
                             <label class="form-label gold-text small">Quantidade</label>
                             <input type="number" name="quantidade" class="form-control form-pirataria" value="1" min="0">
                         </div>
-                        <div class="col-4">
+                        <div class="col-3">
                             <label class="form-label gold-text small">Custo (R$)</label>
                             <input type="number" name="custo" class="form-control form-pirataria" value="0" step="0.01" min="0">
                         </div>
-                        <div class="col-4">
+                        <div class="col-3">
                             <label class="form-label gold-text small">Valor de Venda (R$)</label>
                             <input type="number" name="valor_venda" class="form-control form-pirataria" value="0" step="0.01" min="0">
+                        </div>
+                        <div class="col-3">
+                            <label class="form-label gold-text small">Foto</label>
+                            <input type="file" name="foto" class="form-control form-pirataria" accept="image/png,image/jpeg,image/gif,image/webp" style="padding:0.3rem 0.5rem;font-size:0.85rem;">
                         </div>
                     </div>
                     <div class="mb-3">
@@ -158,7 +173,7 @@
                 <h5 class="gold-text mb-0"><i class="bi bi-pencil"></i> Editar Joia</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
-            <form method="POST" id="formEditar">
+            <form method="POST" id="formEditar" enctype="multipart/form-data">
                 <div class="modal-body">
                     <div class="mb-3">
                         <label class="form-label gold-text small">Nome da Joia *</label>
@@ -179,17 +194,21 @@
                         </div>
                     </div>
                     <div class="row g-3 mb-3">
-                        <div class="col-4">
+                        <div class="col-3">
                             <label class="form-label gold-text small">Quantidade</label>
                             <input type="number" name="quantidade" id="editQuantidade" class="form-control form-pirataria" min="0">
                         </div>
-                        <div class="col-4">
+                        <div class="col-3">
                             <label class="form-label gold-text small">Custo (R$)</label>
                             <input type="number" name="custo" id="editCusto" class="form-control form-pirataria" step="0.01" min="0">
                         </div>
-                        <div class="col-4">
+                        <div class="col-3">
                             <label class="form-label gold-text small">Valor de Venda (R$)</label>
                             <input type="number" name="valor_venda" id="editValorVenda" class="form-control form-pirataria" step="0.01" min="0">
+                        </div>
+                        <div class="col-3">
+                            <label class="form-label gold-text small">Nova Foto</label>
+                            <input type="file" name="foto" class="form-control form-pirataria" accept="image/png,image/jpeg,image/gif,image/webp" style="padding:0.3rem 0.5rem;font-size:0.85rem;">
                         </div>
                     </div>
                     <div class="mb-3">
@@ -206,6 +225,20 @@
     </div>
 </div>
 
+<div class="modal fade" id="modalFoto" tabindex="-1">
+    <div class="modal-dialog modal-md modal-dialog-centered">
+        <div class="modal-content" style="background:var(--bg-card);border:1px solid var(--gold-dark);">
+            <div class="modal-header border-secondary">
+                <h6 class="gold-text mb-0" id="fotoTitulo"></h6>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center p-3">
+                <img id="fotoGrande" src="" class="img-fluid rounded" style="max-height:70vh;object-fit:contain;">
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
 function editarProduto(id, nome, tipo, material, aplicacao, qtd, custo, venda, local) {
     document.getElementById('formEditar').action = '{{ url_for("estoque.editar", id=0) }}'.replace('0', id);
@@ -218,6 +251,12 @@ function editarProduto(id, nome, tipo, material, aplicacao, qtd, custo, venda, l
     document.getElementById('editValorVenda').value = venda;
     document.getElementById('editLocal').value = local;
     new bootstrap.Modal(document.getElementById('modalEditar')).show();
+}
+
+function verFoto(src, nome) {
+    document.getElementById('fotoTitulo').textContent = nome;
+    document.getElementById('fotoGrande').src = src;
+    new bootstrap.Modal(document.getElementById('modalFoto')).show();
 }
 </script>
 {% endblock %}

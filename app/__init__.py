@@ -22,15 +22,20 @@ def create_app(config_name=None):
     from app.blueprints.dashboard import dashboard_bp
     from app.blueprints.estoque import estoque_bp
     from app.blueprints.atendimento import atendimento_bp
+    from app.blueprints.insumos import insumos_bp
+    from app.blueprints.financeiro import financeiro_bp
 
     app.register_blueprint(auth_bp, url_prefix='/auth')
     app.register_blueprint(dashboard_bp)
     app.register_blueprint(estoque_bp, url_prefix='/estoque')
     app.register_blueprint(atendimento_bp, url_prefix='/atendimento')
+    app.register_blueprint(insumos_bp, url_prefix='/insumos')
+    app.register_blueprint(financeiro_bp, url_prefix='/financeiro')
 
     with app.app_context():
         os.makedirs(os.path.join(os.path.dirname(__file__), 'data'), exist_ok=True)
-        from app.models.schemas import Studio, User, Produto, Atendimento
+        os.makedirs(os.path.join(os.path.dirname(__file__), 'static', 'uploads'), exist_ok=True)
+        from app.models.schemas import Studio, User, Produto, Atendimento, Insumo
         db.create_all()
 
     return app

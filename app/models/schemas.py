@@ -38,6 +38,7 @@ class Produto(db.Model):
     custo = db.Column(db.Float, default=0.0)
     valor_venda = db.Column(db.Float, default=0.0)
     local_fisico = db.Column(db.String(200), default='')
+    foto = db.Column(db.String(500), default='')
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     studio = db.relationship('Studio', backref='produtos')
 
@@ -54,6 +55,20 @@ class Atendimento(db.Model):
     status = db.Column(db.String(50), default='Pago')
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     studio = db.relationship('Studio', backref='atendimentos')
+
+class Insumo(db.Model):
+    __tablename__ = 'insumos'
+    id = db.Column(db.Integer, primary_key=True)
+    studio_id = db.Column(db.Integer, db.ForeignKey('studios.id'), nullable=False)
+    nome = db.Column(db.String(200), nullable=False)
+    categoria = db.Column(db.String(100), default='')
+    quantidade = db.Column(db.Float, default=0)
+    unidade = db.Column(db.String(50), default='unidade')
+    custo_unitario = db.Column(db.Float, default=0.0)
+    fornecedor = db.Column(db.String(200), default='')
+    local_fisico = db.Column(db.String(200), default='')
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    studio = db.relationship('Studio', backref='insumos')
 
 @login_manager.user_loader
 def load_user(user_id):
