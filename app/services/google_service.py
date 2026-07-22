@@ -1,5 +1,5 @@
 import logging
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
@@ -105,10 +105,23 @@ def listar_mudancas(integration, client_id, client_secret, since):
     calendar_id = integration.calendar_id or 'primary'
     params = {
         'calendarId': calendar_id,
-        'orderBy': 'updated',
         'singleEvents': True,
     }
     if since:
+        params['orderBy'] = 'updated'
         params['updatedMin'] = since.isoformat()
-    events_result = service.events().list(**params).execute()
-    return events_result.get('items', [])
+    else:
+        params['orderBy'] = 'startTime'
+        params['timeMin'] = (datetime.now(timezone.utc) - timedelta(days=365)).isoformat()
+
+    events = []
+    page_token = None
+    while True:
+        if page_token:
+            params['pageToken'] = page_token
+        resp = service.events().list(**params).execute()
+        events.extend(resp.get('items', []))
+        page_token = resp.get('nextPageToken')
+        if not page_token:
+            break
+    return events

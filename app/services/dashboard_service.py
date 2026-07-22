@@ -20,9 +20,9 @@ class DashboardService:
         agora = datetime.now(timezone.utc)
         proximos = Atendimento.query.filter(
             Atendimento.studio_id == studio_id,
-            Atendimento.scheduled_at >= agora,
             Atendimento.is_active == True,
-        ).order_by(Atendimento.scheduled_at.asc()).limit(3).all()
+        ).order_by(Atendimento.scheduled_at.asc().nullsfirst()).limit(50).all()
+        proximos = [a for a in proximos if not a.scheduled_at or a.scheduled_at >= agora][:3]
 
         tem_calendario = CalendarIntegration.query.filter_by(studio_id=studio_id).first() is not None
 
