@@ -8,6 +8,8 @@ from app import db
 from app.models.schemas import CalendarIntegration, Atendimento
 from app.services import google_service
 
+BRT = timezone(timedelta(hours=-3))
+
 logger = logging.getLogger(__name__)
 
 
@@ -48,7 +50,15 @@ def _importar_evento(studio_id, event_id, summary, description, start_dt, event_
                     setattr(existing, campo, v)
         return 0
 
-    scheduled = datetime.fromisoformat(start_dt.replace('Z', '+00:00')) if start_dt else None
+    scheduled = None
+    if start_dt:
+        try:
+            parsed = datetime.fromisoformat(start_dt.replace('Z', '+00:00'))
+            if parsed.tzinfo is not None:
+                parsed = parsed.astimezone(BRT).replace(tzinfo=None)
+            scheduled = parsed
+        except (ValueError, TypeError):
+            logger.warning('Erro ao parsear data do evento %s: %s', event_id, start_dt)
     a = Atendimento(
         studio_id=studio_id,
         google_event_id=event_id,
@@ -136,8 +146,15 @@ def sync_from_google(studio_id):
                 continue
             h, m = _extrair_horario_do_titulo(title)
             if h is not None and due:
-                dt = datetime.fromisoformat(due.replace('Z', '+00:00'))
-                due = dt.replace(hour=h, minute=m, second=0, microsecond=0).isoformat() + 'Z'
+                try:
+                    dt = datetime.fromisoformat(due.replace('Z', '+00:00'))
+                    dt = dt.replace(hour=h, minute=m, second=0, microsecond=0)
+                    if dt.tzinfo is None:
+                        due = dt.isoformat() + 'Z'
+                    else:
+                        due = dt.astimezone(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
+                except (ValueError, TypeError):
+                    logger.warning('Erro ao processar data da task %s: due=%s', tid, due)
             criados += _importar_evento(studio_id, tid, title, notes, due, updated)
 
     integration.last_sync_at = datetime.now(timezone.utc)

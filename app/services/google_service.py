@@ -12,6 +12,8 @@ SCOPES = [
     'https://www.googleapis.com/auth/tasks',
 ]
 
+BRT = timezone(timedelta(hours=-3))
+
 
 def get_calendar_service(integration, client_id, client_secret):
     return build('calendar', 'v3', credentials=_get_creds(integration, client_id, client_secret))
@@ -23,10 +25,13 @@ def criar_evento(integration, client_id, client_secret, cliente, procedimento=''
     calendar_id = integration.calendar_id or 'primary'
 
     if data_hora and isinstance(data_hora, datetime):
-        start = data_hora
+        if data_hora.tzinfo is None:
+            start = data_hora.replace(tzinfo=BRT)
+        else:
+            start = data_hora.astimezone(BRT)
         end = start.replace(hour=start.hour + 1)
     else:
-        agora = datetime.now(timezone.utc)
+        agora = datetime.now(BRT)
         start = agora
         end = agora.replace(hour=agora.hour + 1)
 

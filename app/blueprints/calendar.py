@@ -1,5 +1,5 @@
 import logging
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 from flask import Blueprint, render_template, redirect, url_for, request, flash, current_app, session
 from flask_login import login_required, current_user
@@ -11,6 +11,8 @@ from app.models.schemas import CalendarIntegration, Atendimento
 from app.services import google_service
 
 logger = logging.getLogger(__name__)
+
+BRT = timezone(timedelta(hours=-3))
 
 calendar_bp = Blueprint('calendar', __name__, template_folder='../templates')
 
@@ -39,7 +41,7 @@ def _get_flow():
 @calendar_bp.route('/agenda')
 @login_required
 def agenda():
-    agora = datetime.now(timezone.utc).replace(tzinfo=None)
+    agora = datetime.now(BRT)
     hoje = agora.date()
 
     todos = Atendimento.query.filter(

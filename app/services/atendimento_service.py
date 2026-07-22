@@ -1,6 +1,8 @@
 import logging
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from flask import current_app
+
+BRT = timezone(timedelta(hours=-3))
 
 from app import db
 from app.models.schemas import CalendarIntegration
@@ -57,12 +59,13 @@ class AtendimentoService:
 
         _sync_create_event(a)
 
-        if a.scheduled_at and a.scheduled_at > datetime.now(timezone.utc).replace(tzinfo=None):
+        if a.scheduled_at and a.scheduled_at > datetime.now(BRT).replace(tzinfo=None):
+            horario = a.scheduled_at
             NotificationService.criar(
                 studio_id=studio_id,
                 tipo='novo_agendamento',
                 titulo=f'Novo agendamento: {a.cliente}',
-                mensagem=f'{a.procedimento or "Procedimento"} agendado para {a.scheduled_at.strftime("%d/%m %H:%M")}',
+                mensagem=f'{a.procedimento or "Procedimento"} agendado para {horario.strftime("%d/%m %H:%M")}',
                 link='/agenda',
             )
 
