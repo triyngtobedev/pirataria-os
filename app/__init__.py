@@ -37,5 +37,16 @@ def create_app(config_name=None):
         os.makedirs(os.path.join(os.path.dirname(__file__), 'static', 'uploads'), exist_ok=True)
         from app.models.schemas import Studio, User, Produto, Atendimento, Insumo
         db.create_all()
+        from sqlalchemy import text as sa_text
+        try:
+            db.session.execute(sa_text('ALTER TABLE produtos ADD COLUMN foto VARCHAR(500) DEFAULT \'\''))
+            db.session.commit()
+        except Exception:
+            db.session.rollback()
+        try:
+            db.session.execute(sa_text('ALTER TABLE insumos ADD COLUMN unidade VARCHAR(50) DEFAULT \'unidade\''))
+            db.session.commit()
+        except Exception:
+            db.session.rollback()
 
     return app

@@ -23,16 +23,16 @@ def mensal():
             db.func.coalesce(db.func.sum(Atendimento.valor), 0)
         ).filter(
             Atendimento.studio_id == sid,
-            db.extract('year', Atendimento.created_at) == ano,
-            db.extract('month', Atendimento.created_at) == mes
+            db.func.extract('year', Atendimento.created_at) == ano,
+            db.func.extract('month', Atendimento.created_at) == mes
         ).scalar() or 0
 
         total_atendimentos = db.session.query(
             db.func.count(Atendimento.id)
         ).filter(
             Atendimento.studio_id == sid,
-            db.extract('year', Atendimento.created_at) == ano,
-            db.extract('month', Atendimento.created_at) == mes
+            db.func.extract('year', Atendimento.created_at) == ano,
+            db.func.extract('month', Atendimento.created_at) == mes
         ).scalar() or 0
 
         pix = db.session.query(
@@ -40,8 +40,8 @@ def mensal():
         ).filter(
             Atendimento.studio_id == sid,
             Atendimento.forma_pagamento == 'Pix',
-            db.extract('year', Atendimento.created_at) == ano,
-            db.extract('month', Atendimento.created_at) == mes
+            db.func.extract('year', Atendimento.created_at) == ano,
+            db.func.extract('month', Atendimento.created_at) == mes
         ).scalar() or 0
 
         dinheiro = db.session.query(
@@ -49,8 +49,8 @@ def mensal():
         ).filter(
             Atendimento.studio_id == sid,
             Atendimento.forma_pagamento == 'Dinheiro',
-            db.extract('year', Atendimento.created_at) == ano,
-            db.extract('month', Atendimento.created_at) == mes
+            db.func.extract('year', Atendimento.created_at) == ano,
+            db.func.extract('month', Atendimento.created_at) == mes
         ).scalar() or 0
 
         cartao = db.session.query(
@@ -58,14 +58,14 @@ def mensal():
         ).filter(
             Atendimento.studio_id == sid,
             Atendimento.forma_pagamento.in_(['Cartão', 'Crédito', 'Débito']),
-            db.extract('year', Atendimento.created_at) == ano,
-            db.extract('month', Atendimento.created_at) == mes
+            db.func.extract('year', Atendimento.created_at) == ano,
+            db.func.extract('month', Atendimento.created_at) == mes
         ).scalar() or 0
 
         atendimentos_mes = Atendimento.query.filter(
             Atendimento.studio_id == sid,
-            db.extract('year', Atendimento.created_at) == ano,
-            db.extract('month', Atendimento.created_at) == mes
+            db.func.extract('year', Atendimento.created_at) == ano,
+            db.func.extract('month', Atendimento.created_at) == mes
         ).all()
 
         custo_total = 0
