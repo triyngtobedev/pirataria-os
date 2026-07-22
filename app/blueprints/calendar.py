@@ -40,6 +40,7 @@ def _get_flow():
 @login_required
 def agenda():
     agora = datetime.now(timezone.utc).replace(tzinfo=None)
+    hoje = agora.date()
 
     todos = Atendimento.query.filter(
         Atendimento.studio_id == current_user.studio_id,
@@ -49,10 +50,10 @@ def agenda():
     com_data = [a for a in todos if a.scheduled_at]
     sem_data = [a for a in todos if not a.scheduled_at]
 
-    proximos = [a for a in com_data if a.scheduled_at >= agora]
+    proximos = [a for a in com_data if a.scheduled_at.date() >= hoje]
     proximos.sort(key=lambda a: a.scheduled_at)
 
-    passados = [a for a in com_data if a.scheduled_at < agora]
+    passados = [a for a in com_data if a.scheduled_at.date() < hoje]
     passados.sort(key=lambda a: a.scheduled_at, reverse=True)
     sem_data.sort(key=lambda a: a.created_at, reverse=True)
     passados = sem_data + passados
