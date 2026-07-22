@@ -54,8 +54,9 @@ def agenda():
 
     passados = [a for a in com_data if a.scheduled_at < agora]
     passados.sort(key=lambda a: a.scheduled_at, reverse=True)
-    passados.extend(reversed(sem_data))
-    passados = passados[:20]
+    sem_data.sort(key=lambda a: a.created_at, reverse=True)
+    passados = sem_data + passados
+    passados = passados[:50]
 
     integration = CalendarIntegration.query.filter_by(studio_id=current_user.studio_id).first()
     return render_template(
