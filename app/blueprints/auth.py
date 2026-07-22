@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, redirect, url_for, request, flash
 from flask_login import login_user, logout_user, login_required
 from app import db
 from app.models.schemas import Studio, User
+from app.seed import seed_studio
 
 auth_bp = Blueprint('auth', __name__, template_folder='../templates')
 
@@ -39,8 +40,10 @@ def register():
         db.session.add(user)
         db.session.commit()
 
-        flash('Conta criada! Faça login.', 'success')
-        return redirect(url_for('auth.login'))
+        seed_studio(studio.id)
+
+        login_user(user)
+        return redirect(url_for('dashboard.dashboard'))
     return render_template('auth/register.html')
 
 @auth_bp.route('/logout')
