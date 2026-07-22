@@ -152,7 +152,7 @@ def sync_from_google(studio_id):
                     dt = datetime.fromisoformat(due.replace('Z', '+00:00'))
                     dt = dt.replace(hour=h, minute=m, second=0, microsecond=0)
                     if dt.tzinfo is None:
-                        due = dt.isoformat() + 'Z'
+                        due = dt.isoformat()
                     else:
                         due = dt.astimezone(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
                 except (ValueError, TypeError):

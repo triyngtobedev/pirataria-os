@@ -26,8 +26,8 @@
                     </p>
                     <p class="small mb-2" style="color:var(--text-primary);">
                         <i class="bi bi-arrow-repeat"></i> Última sincronia:
-                        {% if integration.last_sync_at %}
-                            {{ integration.last_sync_at.strftime('%d/%m/%Y %H:%M') }}
+                        {% if ultima_sync_brt %}
+                            {{ ultima_sync_brt.strftime('%d/%m/%Y %H:%M') }}
                         {% else %}
                             nunca
                         {% endif %}

@@ -74,7 +74,13 @@ def agenda():
 @login_required
 def settings():
     integration = CalendarIntegration.query.filter_by(studio_id=current_user.studio_id).first()
-    return render_template('calendar_settings.html', integration=integration)
+    ultima_sync_brt = None
+    if integration and integration.last_sync_at:
+        if integration.last_sync_at.tzinfo is None:
+            ultima_sync_brt = integration.last_sync_at.replace(tzinfo=timezone.utc).astimezone(BRT)
+        else:
+            ultima_sync_brt = integration.last_sync_at.astimezone(BRT)
+    return render_template('calendar_settings.html', integration=integration, ultima_sync_brt=ultima_sync_brt)
 
 
 @calendar_bp.route('/calendar/connect')
