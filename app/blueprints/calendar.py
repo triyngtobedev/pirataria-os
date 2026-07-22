@@ -1,7 +1,7 @@
 import logging
 from datetime import datetime, timezone
 
-from flask import Blueprint, render_template, redirect, url_for, request, flash, current_app
+from flask import Blueprint, render_template, redirect, url_for, request, flash, current_app, session
 from flask_login import login_required, current_user
 from google_auth_oauthlib.flow import Flow
 
@@ -81,6 +81,7 @@ def connect():
         include_granted_scopes='true',
         prompt='consent',
     )
+    session['google_oauth_state'] = state
     return redirect(authorization_url)
 
 
@@ -88,7 +89,11 @@ def connect():
 @login_required
 def callback():
     flow = _get_flow()
-    flow.fetch_token(authorization_response=request.url)
+    state = session.pop('google_oauth_state', None)
+    flow.fetch_token(
+        authorization_response=request.url,
+        state=state,
+    )
 
     credentials = flow.credentials
 
