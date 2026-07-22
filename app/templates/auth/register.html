@@ -4,33 +4,33 @@
 <div class="row justify-content-center mt-5">
     <div class="col-md-5">
         <div class="card card-pirataria">
-            <div class="card-body p-4">
-                <div class="text-center mb-4">
-                    <i class="bi bi-skull" style="font-size:3rem;color:var(--gold);"></i>
-                    <h4 class="gold-text mt-2">Criar Conta</h4>
-                    <small class="text-secondary">Cadastre seu estúdio</small>
-                </div>
+            <div class="card-body p-4 text-center">
+                <img src="{{ url_for('static', filename='logo.svg') }}" alt="Pirataria Body Art" class="login-logo">
+                <h4 class="gold-text login-title">CRIAR CONTA</h4>
+                <p class="serif-subtitle mb-4">Cadastre seu estúdio no sistema</p>
+
                 <form method="POST">
-                    <div class="mb-3">
-                        <label class="form-label">Nome do Estúdio</label>
+                    <div class="mb-3 text-start">
+                        <label class="form-label small gold-text">Nome do Estúdio</label>
                         <input type="text" name="studio_nome" class="form-control form-pirataria" placeholder="Ex: Pirataria Body Art" required>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label">Seu Nome</label>
+                    <div class="mb-3 text-start">
+                        <label class="form-label small gold-text">Seu Nome</label>
                         <input type="text" name="nome" class="form-control form-pirataria" placeholder="Ex: Lucas" required>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label">Email</label>
+                    <div class="mb-3 text-start">
+                        <label class="form-label small gold-text">Email</label>
                         <input type="email" name="email" class="form-control form-pirataria" placeholder="seu@email.com" required>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label">Senha</label>
+                    <div class="mb-3 text-start">
+                        <label class="form-label small gold-text">Senha</label>
                         <input type="password" name="password" class="form-control form-pirataria" placeholder="Mínimo 6 caracteres" minlength="6" required>
                     </div>
-                    <button type="submit" class="btn btn-pirataria w-100">Criar Conta</button>
+                    <button type="submit" class="btn btn-pirataria w-100 mt-2">Criar Conta</button>
                 </form>
                 <div class="text-center mt-3">
-                    <small class="text-secondary">Já tem conta? <a href="{{ url_for('auth.login') }}" class="gold-text">Entrar</a></small>
+                    <small class="serif-subtitle">Já tem conta?</small><br>
+                    <a href="{{ url_for('auth.login') }}" class="gold-text" style="font-family:'Pirata One',serif;font-size:1.1rem;">Fazer login</a>
                 </div>
             </div>
         </div>

@@ -1,14 +1,14 @@
 {% extends "base.html" %}
 {% block title %}Dashboard — Pirataria Body Art OS{% endblock %}
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4">
+<div class="d-flex justify-content-between align-items-center mb-4 section-header">
     <div>
-        <h4 class="mb-1 gold-text"><i class="bi bi-skull"></i> PIRATARIA BODY ART</h4>
-        <small class="text-secondary">OS v0.1</small>
+        <h4 class="mb-0 gold-text" style="font-size:1.8rem;">Dashboard</h4>
+        <small class="serif-subtitle">Visão geral do dia</small>
     </div>
     <div class="text-end">
-        <small class="text-secondary">Hoje</small>
-        <div class="gold-text" style="font-size:0.9rem;"><strong>{{ hoje_data }}</strong></div>
+        <small class="serif-subtitle">Hoje</small>
+        <div class="gold-text" style="font-size:1.1rem;"><strong>{{ hoje_data }}</strong></div>
     </div>
 </div>
 
@@ -70,7 +70,7 @@
 {% if estoque_baixo %}
 <div class="card card-pirataria mb-4">
     <div class="card-body">
-        <h6 class="gold-text mb-3"><i class="bi bi-exclamation-triangle-fill"></i> Itens com estoque baixo</h6>
+        <h6 class="gold-text mb-3 section-header"><i class="bi bi-exclamation-triangle-fill"></i> Itens com estoque baixo</h6>
         <div class="row g-2">
             {% for item in estoque_baixo %}
             <div class="col-md-4">
@@ -93,7 +93,7 @@
     <div class="col-lg-6">
         <div class="card card-pirataria h-100">
             <div class="card-body">
-                <h6 class="gold-text mb-3"><i class="bi bi-wallet2"></i> Formas de Pagamento (Hoje)</h6>
+                <h6 class="gold-text mb-3 section-header"><i class="bi bi-wallet2"></i> Formas de Pagamento (Hoje)</h6>
                 {% set formas = [('Pix', total_pix, '#27ae60'), ('Dinheiro', total_dinheiro, '#f39c12'), ('Cartão', total_cartao, '#3498db')] %}
                 {% for nome, valor, cor in formas %}
                 <div class="d-flex justify-content-between mb-2">
@@ -107,7 +107,7 @@
     <div class="col-lg-6">
         <div class="card card-pirataria h-100">
             <div class="card-body">
-                <h6 class="gold-text mb-3"><i class="bi bi-clock-history"></i> Últimos Atendimentos</h6>
+                <h6 class="gold-text mb-3 section-header"><i class="bi bi-clock-history"></i> Últimos Atendimentos</h6>
                 {% if atendimentos_hoje %}
                     {% for at in atendimentos_hoje[:5] %}
                     <div class="d-flex justify-content-between align-items-center py-2 border-bottom border-secondary" style="border-color:var(--border-color)!important;">

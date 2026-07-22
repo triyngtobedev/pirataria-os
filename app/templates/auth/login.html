@@ -4,25 +4,25 @@
 <div class="row justify-content-center mt-5">
     <div class="col-md-5">
         <div class="card card-pirataria">
-            <div class="card-body p-4">
-                <div class="text-center mb-4">
-                    <i class="bi bi-skull" style="font-size:3rem;color:var(--gold);"></i>
-                    <h4 class="gold-text mt-2">PIRATARIA BODY ART OS</h4>
-                    <small class="text-secondary">Faça login no seu estúdio</small>
-                </div>
+            <div class="card-body p-4 text-center">
+                <img src="{{ url_for('static', filename='logo.svg') }}" alt="Pirataria Body Art" class="login-logo">
+                <h4 class="gold-text login-title">PIRATARIA BODY ART</h4>
+                <p class="serif-subtitle mb-4">Sistema de Gestão • v0.1</p>
+
                 <form method="POST">
-                    <div class="mb-3">
-                        <label class="form-label">Email</label>
+                    <div class="mb-3 text-start">
+                        <label class="form-label small gold-text">Email</label>
                         <input type="email" name="email" class="form-control form-pirataria" placeholder="seu@email.com" required>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label">Senha</label>
+                    <div class="mb-3 text-start">
+                        <label class="form-label small gold-text">Senha</label>
                         <input type="password" name="password" class="form-control form-pirataria" placeholder="••••••" required>
                     </div>
-                    <button type="submit" class="btn btn-pirataria w-100">Entrar</button>
+                    <button type="submit" class="btn btn-pirataria w-100 mt-2">Entrar</button>
                 </form>
                 <div class="text-center mt-3">
-                    <small class="text-secondary">Não tem conta? <a href="{{ url_for('auth.register') }}" class="gold-text">Cadastre-se</a></small>
+                    <small class="serif-subtitle">Não tem conta?</small><br>
+                    <a href="{{ url_for('auth.register') }}" class="gold-text" style="font-family:'Pirata One',serif;font-size:1.1rem;">Cadastre seu estúdio</a>
                 </div>
             </div>
         </div>

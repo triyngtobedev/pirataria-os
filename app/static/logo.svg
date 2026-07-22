@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <defs>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f0d080"/>
+      <stop offset="50%" style="stop-color:#d4a843"/>
+      <stop offset="100%" style="stop-color:#a88530"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background shield shape -->
+  <path d="M200 20 L360 100 L360 220 Q360 320 200 380 Q40 320 40 220 L40 100 Z"
+        fill="#0d0d0d" stroke="url(#goldGrad)" stroke-width="4"/>
+
+  <!-- Inner border -->
+  <path d="M200 40 L340 110 L340 215 Q340 305 200 360 Q60 305 60 215 L60 110 Z"
+        fill="none" stroke="url(#goldGrad)" stroke-width="1.5" stroke-dasharray="6,4"/>
+
+  <!-- Crossed drumsticks -->
+  <g stroke="#8B7355" stroke-width="6" stroke-linecap="round">
+    <line x1="120" y1="160" x2="280" y2="280"/>
+    <line x1="280" y1="160" x2="120" y2="280"/>
+  </g>
+  <!-- Drumstick tips -->
+  <circle cx="120" cy="160" r="8" fill="#c9a84c"/>
+  <circle cx="280" cy="160" r="8" fill="#c9a84c"/>
+
+  <!-- Skull -->
+  <g fill="none" stroke="url(#goldGrad)" stroke-width="3.5">
+    <!-- Cranium -->
+    <ellipse cx="200" cy="195" rx="62" ry="55" fill="#1a1a1a"/>
+    <!-- Eye sockets -->
+    <ellipse cx="178" cy="188" rx="16" ry="18" fill="#0a0a0a"/>
+    <ellipse cx="222" cy="188" rx="16" ry="18" fill="#0a0a0a"/>
+    <!-- Nose hole -->
+    <path d="M196 208 Q200 218 204 208" fill="#0a0a0a"/>
+    <!-- Jaw -->
+    <path d="M155 210 Q160 240 200 245 Q240 240 245 210" fill="#1a1a1a" stroke-width="2.5"/>
+    <!-- Teeth -->
+    <rect x="178" y="218" width="8" height="12" rx="2" fill="#d4a843" stroke="none"/>
+    <rect x="190" y="218" width="8" height="12" rx="2" fill="#d4a843" stroke="none"/>
+    <rect x="202" y="218" width="8" height="12" rx="2" fill="#d4a843" stroke="none"/>
+    <rect x="214" y="218" width="8" height="12" rx="2" fill="#d4a843" stroke="none"/>
+  </g>
+
+  <!-- Piercing in skull - ring in nose area -->
+  <circle cx="232" cy="195" r="8" fill="none" stroke="#d4a843" stroke-width="2.5"/>
+  <circle cx="232" cy="195" r="2.5" fill="#d4a843"/>
+
+  <!-- Banner ribbon -->
+  <path d="M100 300 Q200 285 300 300 L310 330 Q200 315 90 330 Z"
+        fill="#1a1a1a" stroke="url(#goldGrad)" stroke-width="2.5"/>
+  <!-- Banner folds -->
+  <path d="M100 300 L95 320 L110 312"
+        fill="#1a1a1a" stroke="url(#goldGrad)" stroke-width="2"/>
+  <path d="M300 300 L305 320 L290 312"
+        fill="#1a1a1a" stroke="url(#goldGrad)" stroke-width="2"/>
+
+  <!-- Text on banner -->
+  <text x="200" y="322" text-anchor="middle"
+        font-family="'Pirata One', serif" font-size="22"
+        fill="url(#goldGrad)" font-weight="bold">PIRATARIA BODY ART</text>
+
+  <!-- Old school stars -->
+  <text x="80" y="100" fill="url(#goldGrad)" font-size="24">✦</text>
+  <text x="305" y="100" fill="url(#goldGrad)" font-size="24">✦</text>
+  <text x="65" y="270" fill="url(#goldGrad)" font-size="16">✦</text>
+  <text x="320" y="270" fill="url(#goldGrad)" font-size="16">✦</text>
+
+  <!-- Small dots decoration -->
+  <circle cx="200" cy="80" r="3" fill="url(#goldGrad)"/>
+  <circle cx="185" cy="85" r="2" fill="url(#goldGrad)"/>
+  <circle cx="215" cy="85" r="2" fill="url(#goldGrad)"/>
+</svg>
