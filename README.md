@@ -24,18 +24,56 @@ O **Pirataria Body Art OS** é um sistema web completo para gerenciamento de est
 
 Controle seu catálogo de joias, registre atendimentos com baixa automática de estoque, gerencie insumos, acompanhe seu faturamento mensal — tudo com a identidade visual old school que representa a cultura do body piercing.
 
-### Recursos
+---
 
-- **Catálogo de Joias** — Cadastro completo com tipo, material, local de aplicação, custo, valor de venda, foto opcional e filtros de ordenação (nome, quantidade, custo, venda)
-- **Atendimentos** — Registro com baixa automática de estoque, formas de pagamento (Pix, Dinheiro, Cartão), busca e ordenação por cliente, valor e data
-- **Insumos** — Controle de estoque de materiais de consumo (luvas, agulhas, antissépticos etc.) com ordenação por nome, quantidade e custo
-- **Financeiro** — Planilha anual com receita, custo, lucro e divisão por forma de pagamento, ordenável por mês, atendimentos, receita e lucro
-- **Multi-estúdio** — Cadastro separado por estúdio, dados 100% isolados
-- **Dashboard** — Visão geral do dia: faturamento, procedimentos, clientes, estoque baixo + frase motivacional diária
-- **Tema dark/light** — Alternador com 3 modos: claro, escuro e automático (sistema)
-- **PWA** — Instala como aplicativo no celular via navegador
-- **Docker** — Pronto para deploy em produção
-- **Landing page** — Apresentação do sistema para visitantes
+## ✦ Recursos
+
+### Agenda e Agendamentos
+- **Agenda inteligente** com visão de próximos e passados
+- **Sincronização bidirecional** com Google Calendar e Google Tasks
+- **Campo de data/hora** no registro de atendimento para agendar serviços futuros
+- **Badge com contagem** de próximos agendamentos na Agenda
+- **Horários no fuso BRT** (America/Sao Paulo) — sem confusão de UTC
+
+### Notificações
+- **Notificações no Dashboard** ao criar agendamentos futuros
+- **Notificação push PWA** via Web Push API — o piercer recebe alerta no celular mesmo com o navegador fechado
+- **Inscrição por clique** no sininho 🔔 do navbar
+
+### Catálogo de Joias
+Cadastro completo com nome, tipo (argola, barbell, banana etc.), material (titânio, aço, ouro 18k etc.), local de aplicação, quantidade em estoque, custo, valor de venda e foto opcional com visualização em modal expandido. Busca por texto em tempo real, filtro por status de estoque, favoritos e ordenação por nome, quantidade, custo ou valor de venda.
+
+### Atendimentos
+Registro de atendimentos com busca inteligente de joias no estoque. Ao selecionar uma joia, a quantidade é baixada automaticamente. Suporte a múltiplas formas de pagamento (Pix, Dinheiro, Cartão, Débito, Crédito).
+
+### Insumos
+Controle de estoque para materiais de consumo: luvas, agulhas, antissépticos, embalagens etc. Com categorias, unidades de medida (unidade, par, ml, g), custo unitário e fornecedor.
+
+### Financeiro
+Planilha anual com receita, custo estimado das joias utilizadas, lucro e quebra por forma de pagamento (Pix, Dinheiro, Cartão) mês a mês, com totais acumulados.
+
+### Dashboard
+Visão geral do dia: faturamento, procedimentos, clientes, estoque baixo, próximos agendamentos, notificações + frase motivacional diária com rodízio de 30 frases.
+
+### Autenticação e Segurança
+- Login, cadastro e logout
+- **Recuperação de senha** via email (SMTP) com fallback mostrando o link na tela
+- **Alteração de senha** pelo usuário logado (🔑 no navbar)
+- Multi-estúdio com dados 100% isolados por tenant
+
+### Google Calendar + Tasks
+- Conexão OAuth2 com escopos de calendário e tarefas
+- Sincronização automática a cada 5 minutos (APScheduler)
+- Criação/atualização/exclusão de eventos ao registrar/remover atendimentos
+- Importação de eventos do calendário e tarefas do Google Tasks como atendimentos
+- Extração automática de horário do título da tarefa (ex: "14:30 - Cliente")
+- Conversão de fuso horário para BRT
+
+### Experiência do Usuário
+- **Tema dark/light** — alternador com 3 modos: claro, escuro e automático (sistema)
+- **PWA** — instala como aplicativo no celular via navegador com service worker para cache offline
+- **Responsivo** — funciona em desktop e mobile
+- **Interface old school** com fontes Pirata One + Playfair Display
 
 ---
 
@@ -49,8 +87,26 @@ Controle seu catálogo de joias, registre atendimentos com baixa automática de 
 | Fonte | Pirata One + Playfair Display |
 | Banco | SQLite (dev) / PostgreSQL 16 (prod) |
 | Auth | Flask-Login + Werkzeug |
+| Task scheduling | APScheduler 3.11 |
+| Google APIs | google-api-python-client, google-auth-oauthlib |
+| Push notification | pywebpush + Web Push API |
 | Container | Docker + Gunicorn |
 | Deploy | Railway |
+
+---
+
+## ✦ Novidades da v0.2
+
+- **Sistema de notificações** com modelo próprio e exibição no Dashboard
+- **Notificação push PWA** no celular para novos agendamentos
+- **Campo de data/hora** no formulário de atendimento (agendamento futuro)
+- **Correção de fuso horário** — tudo em BRT, sem confusão com UTC
+- **Recuperação de senha** por email com fallback na tela
+- **Alteração de senha** pelo próprio usuário
+- **Badge de contagem** de próximos agendamentos na Agenda
+- **Re-sync forçado** ao reiniciar para corrigir horários antigos
+- **Correção na exibição** de valores zero (R$ 0) na Agenda
+- **Compatibilidade PostgreSQL** nas migrations (boolean, timestamp)
 
 ---
 
@@ -63,25 +119,40 @@ pirataria-os/
 ├── Dockerfile             # Container para produção
 ├── docker-compose.yml     # PostgreSQL + app (dev local)
 ├── railway.json           # Configuração Railway
+├── startup.sh             # Script de inicialização (migrations + gunicorn)
 │
 ├── app/                   # Pacote principal
 │   ├── __init__.py        # App factory (create_app)
 │   ├── models/
-│   │   └── schemas.py     # Studio, User, Produto, Atendimento, Insumo
+│   │   └── schemas.py     # Studio, User, Produto, Atendimento, Insumo,
+│   │                      # CalendarIntegration, Notification, PushSubscription
 │   ├── blueprints/
-│   │   ├── auth.py        # Login, registro, logout
+│   │   ├── auth.py        # Login, registro, logout, recuperação de senha
 │   │   ├── dashboard.py   # Dashboard principal
 │   │   ├── estoque.py     # Catálogo de joias
 │   │   ├── atendimento.py # Registro de atendimentos
 │   │   ├── insumos.py     # Controle de insumos
-│   │   └── financeiro.py  # Planilha financeira mensal
+│   │   ├── financeiro.py  # Planilha financeira mensal
+│   │   ├── calendar.py    # Google Calendar + Tasks + Agenda
+│   │   └── notifications.py # Inscrição push PWA
+│   ├── services/
+│   │   ├── auth_service.py
+│   │   ├── atendimento_service.py
+│   │   ├── dashboard_service.py
+│   │   ├── google_service.py    # Google Calendar/Tasks API
+│   │   ├── sync_service.py      # Sincronização bidirecional
+│   │   ├── notification_service.py
+│   │   ├── push_service.py      # Envio de push notification
+│   │   └── email_service.py     # Envio de email (SMTP)
+│   ├── repositories/       # Padrão Repository (CRUD)
 │   ├── middleware/
 │   │   └── tenant.py      # Isolamento multi-estúdio
-│   ├── templates/         # Jinja2 templates
-│   ├── static/            # CSS, JS, imagens, uploads
-│   ├── quotes.py          # 30 frases motivacionais
-│   └── seed.py            # Dados de demonstração
+│   ├── templates/          # Jinja2 templates
+│   ├── static/             # CSS, JS, imagens, uploads
+│   ├── quotes.py           # 30 frases motivacionais
+│   └── seed.py             # Dados de demonstração
 │
+├── migrations/             # Alembic (9 migrações)
 └── requirements.txt
 ```
 
@@ -90,22 +161,39 @@ pirataria-os/
 ## ✦ Funcionalidades em detalhe
 
 ### Dashboard
-Visão consolidada do dia: faturamento, número de procedimentos, clientes atendidos, formas de pagamento, itens com estoque baixo, frase motivacional diária e tema adaptável (claro/escuro/sistema).
+Visão consolidada do dia: faturamento, número de procedimentos, clientes atendidos, formas de pagamento, itens com estoque baixo, próximos agendamentos, notificações de novos agendamentos e frase motivacional diária. Tema adaptável (claro/escuro/sistema).
 
-### Catálogo de Joias
-Cadastro completo com nome, tipo (argola, barbell, banana etc.), material (titânio, aço, ouro 18k etc.), local de aplicação, quantidade em estoque, custo, valor de venda e **foto opcional** com visualização em modal expandido. Busca por texto em tempo real, filtro por status de estoque, favoritos e ordenação por nome, quantidade, custo ou valor de venda.
+### Agenda
+Lista de próximos agendamentos (com data futura) e atendimentos passados. Sincronização manual ou automática com Google Calendar. Badge com contagem de próximos.
 
-### Atendimentos
-Registro de atendimentos com busca inteligente de joias no estoque. Ao selecionar uma joia, a quantidade é baixada automaticamente. Suporte a múltiplas formas de pagamento.
+### Google Calendar / Tasks
+Conecte sua conta Google e sincronize eventos e tarefas automaticamente. Eventos do calendário viram atendimentos no sistema. Tarefas com horário no título (ex: "14:30 - Maria") têm o horário extraído automaticamente.
 
-### Insumos
-Controle de estoque para materiais de consumo: luvas, agulhas, antissépticos, embalagens etc. Com categorias, unidades de medida (unidade, par, ml, g), custo unitário e fornecedor.
+### Notificações Push
+Ative as notificações pelo sininho 🔔 no navbar (requer PWA instalado). Ao criar um agendamento futuro, todos os dispositivos inscritos no estúdio recebem um push com os detalhes.
 
-### Financeiro
-Planilha anual com receita, custo estimado das joias utilizadas, lucro e quebra por forma de pagamento (Pix, Dinheiro, Cartão) mês a mês, com totais acumulados.
+### Recuperação de Senha
+Na tela de login, clique em "Esqueci minha senha". Digite o email cadastrado. Se o SMTP estiver configurado, um link de recuperação é enviado por email. Caso contrário, o link é exibido diretamente na tela.
 
-### Multi-estúdio
-Cada estúdio tem seu próprio cadastro, login e dados completamente isolados — ideal para redes de estúdios ou franquias.
+---
+
+## ✦ Variáveis de Ambiente
+
+| Variável | Obrigatório | Descrição |
+|----------|-------------|-----------|
+| `FLASK_ENV` | Não | `development` ou `production` |
+| `SECRET_KEY` | Sim (prod) | Chave secreta do Flask |
+| `DATABASE_URL` | Não | URL do banco (default: SQLite) |
+| `GOOGLE_CLIENT_ID` | Não | ID do app Google OAuth |
+| `GOOGLE_CLIENT_SECRET` | Não | Secret do app Google OAuth |
+| `GOOGLE_REDIRECT_URI` | Não | URL de callback OAuth |
+| `VAPID_PUBLIC_KEY` | Não | Chave pública para push notification |
+| `VAPID_PRIVATE_KEY` | Não | Chave privada para push notification |
+| `SMTP_HOST` | Não | Servidor SMTP (ex: smtp.gmail.com) |
+| `SMTP_PORT` | Não | Porta SMTP (default: 587) |
+| `SMTP_USER` | Não | Usuário SMTP |
+| `SMTP_PASS` | Não | Senha SMTP |
+| `SMTP_FROM` | Não | Remetente dos emails |
 
 ---
 
@@ -149,9 +237,7 @@ Acesse `http://localhost:5000`.
 1. Faça fork do repositório
 2. Crie um projeto no [Railway](https://railway.app) a partir do GitHub
 3. Adicione um banco PostgreSQL
-4. Configure as variáveis:
-   - `FLASK_ENV=production`
-   - `SECRET_KEY=uma-chave-segura`
+4. Configure as variáveis de ambiente (veja tabela acima)
 5. Pronto! O Railway detecta o Dockerfile e faz o build automaticamente
 
 ---
