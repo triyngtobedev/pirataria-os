@@ -1,10 +1,13 @@
 import smtplib
+import socket
 import logging
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-from flask import current_app, render_template
+from flask import current_app
 
 logger = logging.getLogger(__name__)
+
+TIMEOUT = 10
 
 
 def enviar_email(destinatario, assunto, corpo_html):
@@ -15,7 +18,7 @@ def enviar_email(destinatario, assunto, corpo_html):
     remetente = current_app.config.get('SMTP_FROM', smtp_user)
 
     if not smtp_host or not smtp_user or not smtp_pass:
-        logger.warning('SMTP nao configurado. Email nao enviado para %s', destinatario)
+        logger.info('SMTP nao configurado. Email nao enviado para %s', destinatario)
         return False
 
     msg = MIMEMultipart('alternative')
@@ -29,12 +32,15 @@ def enviar_email(destinatario, assunto, corpo_html):
     msg.attach(parte_html)
 
     try:
-        with smtplib.SMTP(smtp_host, smtp_port) as server:
+        with smtplib.SMTP(smtp_host, smtp_port, timeout=TIMEOUT) as server:
             server.starttls()
             server.login(smtp_user, smtp_pass)
             server.sendmail(remetente, [destinatario], msg.as_string())
         logger.info('Email enviado para %s', destinatario)
         return True
+    except socket.timeout:
+        logger.error('Timeout ao conectar SMTP %s', smtp_host)
+        return False
     except Exception as e:
         logger.error('Erro ao enviar email para %s: %s', destinatario, e)
         return False
