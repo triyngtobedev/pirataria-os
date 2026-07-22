@@ -47,7 +47,7 @@ def _importar_evento(studio_id, event_id, summary, description, start_dt, event_
         try:
             parsed = datetime.fromisoformat(start_dt.replace('Z', '+00:00'))
             if parsed.tzinfo is not None:
-                parsed = parsed.astimezone(BRT).replace(tzinfo=None)
+                parsed = parsed.replace(tzinfo=None)
             scheduled = parsed
         except (ValueError, TypeError):
             logger.warning('Erro ao parsear data do evento %s: %s', event_id, start_dt)
@@ -154,7 +154,7 @@ def sync_from_google(studio_id):
                     if dt.tzinfo is None:
                         due = dt.isoformat()
                     else:
-                        due = dt.astimezone(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
+                        due = dt.strftime('%Y-%m-%dT%H:%M:%S')
                 except (ValueError, TypeError):
                     logger.warning('Erro ao processar data da task %s: due=%s', tid, due)
             criados += _importar_evento(studio_id, tid, title, notes, due, updated)
