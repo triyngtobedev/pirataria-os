@@ -88,8 +88,8 @@
                 <small class="text-secondary">{{ ag.procedimento or '' }}</small>
             </div>
             <div class="text-end">
-                <span class="gold-text fw-bold">{{ "%.0f"|format(ag.valor) }}</span><br>
-                <small class="text-secondary">{{ ag.forma_pagamento }}</small>
+                {% if ag.valor %}<span class="gold-text fw-bold">{{ "%.0f"|format(ag.valor) }}</span>{% endif %}
+                {% if ag.forma_pagamento %}<br><small class="text-secondary">{{ ag.forma_pagamento }}</small>{% endif %}
             </div>
         </div>
         {% endfor %}
