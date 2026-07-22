@@ -159,8 +159,30 @@ def select_calendar(calendar_id):
         flash('Conecte o Google Agenda primeiro.', 'danger')
         return redirect(url_for('calendar.settings'))
     integration.calendar_id = calendar_id
+    integration.last_sync_at = None
+    deletados = Atendimento.query.filter(
+        Atendimento.studio_id == current_user.studio_id,
+        Atendimento.google_event_id.isnot(None),
+    ).delete(synchronize_session=False)
     db.session.commit()
-    flash('Calendário selecionado com sucesso!', 'success')
+    flash(f'Calendário trocado! {deletados} eventos antigos removidos.', 'warning')
+    return redirect(url_for('calendar.settings'))
+
+
+@calendar_bp.route('/calendar/clear')
+@login_required
+def clear_synced():
+    integration = CalendarIntegration.query.filter_by(studio_id=current_user.studio_id).first()
+    if not integration:
+        flash('Nenhuma integracao encontrada.', 'danger')
+        return redirect(url_for('calendar.settings'))
+    deletados = Atendimento.query.filter(
+        Atendimento.studio_id == current_user.studio_id,
+        Atendimento.google_event_id.isnot(None),
+    ).delete(synchronize_session=False)
+    integration.last_sync_at = None
+    db.session.commit()
+    flash(f'{deletados} eventos sincronizados removidos.', 'warning')
     return redirect(url_for('calendar.settings'))
 
 

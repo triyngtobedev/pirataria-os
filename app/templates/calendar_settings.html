@@ -27,9 +27,14 @@
                             nunca
                         {% endif %}
                     </p>
-                    <div class="d-flex gap-2">
+                    <div class="d-flex gap-2 flex-wrap">
                         <a href="{{ url_for('calendar.sync_now') }}" class="btn btn-pirataria btn-sm">
                             <i class="bi bi-arrow-repeat"></i> Sincronizar agora
+                        </a>
+                        <a href="{{ url_for('calendar.clear_synced') }}"
+                           class="btn btn-outline-danger btn-sm"
+                           onclick="return confirm('Remover todos os eventos importados da agenda?')">
+                            <i class="bi bi-trash"></i> Limpar importados
                         </a>
                         <a href="{{ url_for('calendar.disconnect') }}"
                            class="btn btn-outline-pirataria btn-sm"
