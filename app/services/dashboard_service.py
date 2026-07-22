@@ -24,7 +24,15 @@ class DashboardService:
             Atendimento.is_active == True,
         ).order_by(Atendimento.scheduled_at.asc().nullsfirst()).limit(50).all()
         proximos = [a for a in proximos if not a.scheduled_at or a.scheduled_at.date() >= hoje][:3]
-
+        
+        import logging
+        logging.getLogger(__name__).info('Dashboard: %d atendimentos totais, %d proximos, hoje=%s',
+                                          len(Atendimento.query.filter(
+                                              Atendimento.studio_id == studio_id,
+                                              Atendimento.is_active == True,
+                                          ).all()),
+                                          len(proximos), hoje)
+        
         tem_calendario = CalendarIntegration.query.filter_by(studio_id=studio_id).first() is not None
 
         return {
