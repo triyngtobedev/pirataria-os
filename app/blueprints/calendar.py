@@ -1,0 +1,118 @@
+import logging
+from datetime import datetime, timezone
+
+from flask import Blueprint, render_template, redirect, url_for, request, flash, current_app
+from flask_login import login_required, current_user
+from google_auth_oauthlib.flow import Flow
+
+from app import db
+from app.middleware.tenant import inject_studio
+from app.models.schemas import CalendarIntegration
+from app.services import google_service
+
+logger = logging.getLogger(__name__)
+
+calendar_bp = Blueprint('calendar', __name__, template_folder='../templates')
+
+
+@calendar_bp.before_request
+def before_request():
+    inject_studio()
+
+
+def _get_flow():
+    return Flow.from_client_config(
+        {
+            'web': {
+                'client_id': current_app.config['GOOGLE_CLIENT_ID'],
+                'client_secret': current_app.config['GOOGLE_CLIENT_SECRET'],
+                'auth_uri': 'https://accounts.google.com/o/oauth2/auth',
+                'token_uri': 'https://oauth2.googleapis.com/token',
+                'redirect_uris': [current_app.config['GOOGLE_REDIRECT_URI']],
+            }
+        },
+        scopes=google_service.SCOPES,
+        redirect_uri=current_app.config['GOOGLE_REDIRECT_URI'],
+    )
+
+
+@calendar_bp.route('/calendar/settings')
+@login_required
+def settings():
+    integration = CalendarIntegration.query.filter_by(studio_id=current_user.studio_id).first()
+    return render_template('calendar_settings.html', integration=integration)
+
+
+@calendar_bp.route('/calendar/connect')
+@login_required
+def connect():
+    if not current_app.config['GOOGLE_CLIENT_ID'] or not current_app.config['GOOGLE_CLIENT_SECRET']:
+        flash('Google Calendar não configurado. Configure GOOGLE_CLIENT_ID e GOOGLE_CLIENT_SECRET.', 'danger')
+        return redirect(url_for('calendar.settings'))
+
+    flow = _get_flow()
+    authorization_url, state = flow.authorization_url(
+        access_type='offline',
+        include_granted_scopes='true',
+        prompt='consent',
+    )
+    return redirect(authorization_url)
+
+
+@calendar_bp.route('/calendar/callback')
+@login_required
+def callback():
+    flow = _get_flow()
+    flow.fetch_token(authorization_response=request.url)
+
+    credentials = flow.credentials
+
+    integration = CalendarIntegration.query.filter_by(studio_id=current_user.studio_id).first()
+    if not integration:
+        integration = CalendarIntegration(studio_id=current_user.studio_id)
+        db.session.add(integration)
+
+    integration.access_token = credentials.token
+    integration.refresh_token = credentials.refresh_token
+    integration.token_expiry = credentials.expiry
+
+    try:
+        service = google_service.get_calendar_service(
+            integration,
+            current_app.config['GOOGLE_CLIENT_ID'],
+            current_app.config['GOOGLE_CLIENT_SECRET'],
+        )
+        about = service.calendars().get(calendarId='primary').execute()
+        integration.calendar_id = about.get('id')
+        integration.google_email = about.get('summary')
+    except Exception as e:
+        logger.warning('Erro ao obter info do calendario: %s', e)
+
+    db.session.commit()
+    flash('Google Agenda conectada com sucesso!', 'success')
+    return redirect(url_for('calendar.settings'))
+
+
+@calendar_bp.route('/calendar/disconnect')
+@login_required
+def disconnect():
+    integration = CalendarIntegration.query.filter_by(studio_id=current_user.studio_id).first()
+    if integration:
+        db.session.delete(integration)
+        db.session.commit()
+        flash('Google Agenda desconectada.', 'warning')
+    return redirect(url_for('calendar.settings'))
+
+
+@calendar_bp.route('/calendar/sync')
+@login_required
+def sync_now():
+    integration = CalendarIntegration.query.filter_by(studio_id=current_user.studio_id).first()
+    if not integration:
+        flash('Nenhuma integracao com Google Agenda encontrada.', 'danger')
+        return redirect(url_for('calendar.settings'))
+
+    from app.services.sync_service import sync_from_google
+    criados, atualizados = sync_from_google(current_user.studio_id)
+    flash(f'Sincronizado! {criados} criados, {atualizados} atualizados.', 'info')
+    return redirect(url_for('calendar.settings'))

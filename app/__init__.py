@@ -5,6 +5,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_migrate import Migrate
 from flask_wtf.csrf import CSRFProtect
+from apscheduler.schedulers.background import BackgroundScheduler
 from config import config
 
 db = SQLAlchemy()
@@ -12,6 +13,8 @@ login_manager = LoginManager()
 login_manager.login_view = 'auth.login'
 migrate = Migrate()
 csrf = CSRFProtect()
+scheduler = BackgroundScheduler(daemon=True)
+
 
 def create_app(config_name=None):
     if config_name is None:
@@ -40,6 +43,7 @@ def create_app(config_name=None):
     from app.blueprints.atendimento import atendimento_bp
     from app.blueprints.insumos import insumos_bp
     from app.blueprints.financeiro import financeiro_bp
+    from app.blueprints.calendar import calendar_bp
 
     app.register_blueprint(auth_bp, url_prefix='/auth')
     app.register_blueprint(dashboard_bp)
@@ -47,6 +51,7 @@ def create_app(config_name=None):
     app.register_blueprint(atendimento_bp, url_prefix='/atendimento')
     app.register_blueprint(insumos_bp, url_prefix='/insumos')
     app.register_blueprint(financeiro_bp, url_prefix='/financeiro')
+    app.register_blueprint(calendar_bp)
 
     @app.errorhandler(500)
     def internal_error(error):
@@ -60,5 +65,18 @@ def create_app(config_name=None):
     with app.app_context():
         os.makedirs(os.path.join(os.path.dirname(__file__), 'data'), exist_ok=True)
         os.makedirs(os.path.join(os.path.dirname(__file__), 'static', 'uploads'), exist_ok=True)
+
+    if not scheduler.running and not app.config.get('TESTING'):
+        from app.services.sync_service import sync_all_studios
+        scheduler.add_job(
+            sync_all_studios,
+            'interval',
+            minutes=5,
+            id='google_sync',
+            replace_existing=True,
+            next_run_time=None,
+        )
+        scheduler.start()
+        app.logger.info('APScheduler started: sync every 5 minutes')
 
     return app

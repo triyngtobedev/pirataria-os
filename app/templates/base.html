@@ -44,6 +44,7 @@
                     <li class="nav-item"><a class="nav-link {% if '/insumos' in request.path %}active{% endif %}" href="{{ url_for('insumos.listar') }}"><i class="bi bi-capsule"></i>Insumos</a></li>
                     <li class="nav-item"><a class="nav-link {% if '/atendimento' in request.path %}active{% endif %}" href="{{ url_for('atendimento.listar') }}"><i class="bi bi-clipboard-check"></i>Atendimentos</a></li>
                     <li class="nav-item"><a class="nav-link {% if '/financeiro' in request.path %}active{% endif %}" href="{{ url_for('financeiro.mensal') }}"><i class="bi bi-graph-up"></i>Financeiro</a></li>
+                    <li class="nav-item"><a class="nav-link {% if '/calendar' in request.path %}active{% endif %}" href="{{ url_for('calendar.settings') }}"><i class="bi bi-calendar-event"></i>Agenda</a></li>
                     <li class="nav-item"><button class="nav-link theme-btn" onclick="alternarTema()" title="Alternar tema" style="border:none;background:transparent;padding:0.5rem 1rem;"><i class="bi" id="iconeTema"></i></button></li>
                     <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.logout') }}"><i class="bi bi-box-arrow-right"></i>Sair</a></li>
                 </ul>

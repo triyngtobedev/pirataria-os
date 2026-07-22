@@ -116,6 +116,7 @@ class Atendimento(db.Model):
     updated_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
     deleted_at = db.Column(db.DateTime, nullable=True)
     created_by_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+    google_event_id = db.Column(db.String(500), nullable=True)
 
     studio = db.relationship('Studio', backref='atendimentos')
     created_by = db.relationship('User', foreign_keys=[created_by_id])
@@ -174,6 +175,20 @@ class StockMovement(db.Model):
     studio = db.relationship('Studio', backref='stock_movements')
     produto = db.relationship('Produto', backref='stock_movements')
     created_by = db.relationship('User', foreign_keys=[created_by_id])
+
+
+class CalendarIntegration(db.Model):
+    __tablename__ = 'calendar_integrations'
+    id = db.Column(db.Integer, primary_key=True)
+    studio_id = db.Column(db.Integer, db.ForeignKey('studios.id'), nullable=False, unique=True)
+    access_token = db.Column(db.Text, nullable=False)
+    refresh_token = db.Column(db.Text, nullable=False)
+    token_expiry = db.Column(db.DateTime, nullable=True)
+    calendar_id = db.Column(db.String(500), nullable=True)
+    google_email = db.Column(db.String(200), nullable=True)
+    last_sync_at = db.Column(db.DateTime, nullable=True)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+    updated_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
 
 
 class ActivityLog(db.Model):

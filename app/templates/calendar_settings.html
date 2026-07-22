@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Google Agenda — Pirataria Body Art OS{% endblock %}
+{% block content %}
+<div class="row justify-content-center mt-4">
+    <div class="col-md-6">
+        <div class="card card-pirataria">
+            <div class="card-body p-4">
+                <h4 class="gold-text mb-3"><i class="bi bi-calendar-event"></i> Google Agenda</h4>
+                <p class="serif-subtitle mb-4">Conecte sua agenda para sincronizar os atendimentos automaticamente.</p>
+
+                {% if integration %}
+                <div class="mb-4">
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <span class="badge bg-success" style="font-size:0.8rem;">Conectado</span>
+                        <span class="text-muted small">{{ integration.google_email or '' }}</span>
+                    </div>
+                    <p class="small text-muted mb-2">
+                        <i class="bi bi-arrow-repeat"></i> Última sincronia:
+                        {% if integration.last_sync_at %}
+                            {{ integration.last_sync_at.strftime('%d/%m/%Y %H:%M') }}
+                        {% else %}
+                            nunca
+                        {% endif %}
+                    </p>
+                    <div class="d-flex gap-2">
+                        <a href="{{ url_for('calendar.sync_now') }}" class="btn btn-pirataria btn-sm">
+                            <i class="bi bi-arrow-repeat"></i> Sincronizar agora
+                        </a>
+                        <a href="{{ url_for('calendar.disconnect') }}"
+                           class="btn btn-outline-pirataria btn-sm"
+                           onclick="return confirm('Desconectar Google Agenda?')">
+                            <i class="bi bi-unlink"></i> Desconectar
+                        </a>
+                    </div>
+                </div>
+                <div class="alert alert-info small p-3" style="background:var(--bg-card-hover);border:1px solid var(--border-color);border-radius:4px;">
+                    <i class="bi bi-info-circle"></i>
+                    Ao criar um atendimento no site, um evento é criado automaticamente na sua agenda.
+                    Eventos criados diretamente no Google Agenda aparecerão aqui após a sincronização.
+                </div>
+                {% else %}
+                <p class="text-muted small mb-3">
+                    <i class="bi bi-info-circle"></i>
+                    Você precisa de uma conta Google para usar este recurso.
+                </p>
+                <a href="{{ url_for('calendar.connect') }}" class="btn btn-pirataria">
+                    <i class="bi bi-google"></i> Conectar Google Agenda
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

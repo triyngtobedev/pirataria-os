@@ -1,8 +1,15 @@
+import logging
+from flask import current_app
+
 from app import db
+from app.models.schemas import CalendarIntegration
 from app.repositories.atendimento_repo import AtendimentoRepository
 from app.repositories.produto_repo import ProdutoRepository
 from app.repositories.stock_movement_repo import StockMovementRepository
 from app.services.activity_service import ActivityService
+from app.services import google_service
+
+logger = logging.getLogger(__name__)
 
 
 class AtendimentoService:
@@ -46,6 +53,8 @@ class AtendimentoService:
             descricao=f'Atendimento de {dados.get("cliente", "")} - R$ {dados.get("valor", 0)}'
         )
 
+        _sync_create_event(a)
+
         return a
 
     @staticmethod
@@ -54,9 +63,49 @@ class AtendimentoService:
         if a:
             sid = a.studio_id
             cliente = a.cliente
+            _sync_delete_event(a)
             AtendimentoRepository.soft_delete(a)
             ActivityService.log(
                 studio_id=sid, user_id=user_id,
                 acao='excluir', entidade='atendimento', entidade_id=atendimento_id,
                 descricao=f'Atendimento de {cliente} removido'
             )
+
+
+def _sync_create_event(atendimento):
+    integration = CalendarIntegration.query.filter_by(studio_id=atendimento.studio_id).first()
+    if not integration:
+        return
+    try:
+        event_id = google_service.criar_evento(
+            integration,
+            current_app.config['GOOGLE_CLIENT_ID'],
+            current_app.config['GOOGLE_CLIENT_SECRET'],
+            cliente=atendimento.cliente,
+            procedimento=atendimento.procedimento or '',
+            joia=atendimento.joia_utilizada or '',
+            valor=atendimento.valor or 0,
+            pagamento=atendimento.forma_pagamento or '',
+            piercer=atendimento.piercer or '',
+        )
+        atendimento.google_event_id = event_id
+        db.session.commit()
+    except Exception as e:
+        logger.warning('Erro ao criar evento no Google Agenda: %s', e)
+
+
+def _sync_delete_event(atendimento):
+    if not atendimento.google_event_id:
+        return
+    integration = CalendarIntegration.query.filter_by(studio_id=atendimento.studio_id).first()
+    if not integration:
+        return
+    try:
+        google_service.excluir_evento(
+            integration,
+            current_app.config['GOOGLE_CLIENT_ID'],
+            current_app.config['GOOGLE_CLIENT_SECRET'],
+            atendimento.google_event_id,
+        )
+    except Exception as e:
+        logger.warning('Erro ao excluir evento do Google Agenda: %s', e)
