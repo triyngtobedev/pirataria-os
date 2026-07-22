@@ -20,10 +20,19 @@ def sync_from_google(studio_id):
     if not client_id or not client_secret:
         return 0, 0
 
-    since = integration.last_sync_at or (datetime.now(timezone.utc) - timedelta(days=30))
-    events = google_service.listar_mudancas(integration, client_id, client_secret, since)
+    since = integration.last_sync_at or (datetime.now(timezone.utc) - timedelta(days=7))
     criados = 0
     atualizados = 0
+
+    try:
+        events = google_service.listar_mudancas(integration, client_id, client_secret, since)
+    except Exception:
+        logger.warning('Sync com updatedMin falhou, tentando sem filtro de data...')
+        try:
+            events = google_service.listar_mudancas(integration, client_id, client_secret, since=None)
+        except Exception as e:
+            logger.error('Sync falhou completamente: %s', e)
+            return 0, 0
 
     for event in events:
         event_id = event.get('id')
