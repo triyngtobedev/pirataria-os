@@ -12,10 +12,7 @@
                 {% for ag in proximos_agendamentos %}
                 <div class="d-flex align-items-center gap-3 py-1">
                     <span class="badge" style="background:var(--gold-dark);font-size:0.8rem;color:var(--text-primary);">
-                        {{ ag.scheduled_at.strftime('%d/%m') if ag.scheduled_at else '—' }}
-                        {% if ag.scheduled_at and ag.scheduled_at.strftime('%H:%M') != '00:00' %}
-                        {{ ag.scheduled_at.strftime('%H:%M') }}
-                        {% endif %}
+                        {{ ag.scheduled_at.strftime('%d/%m %H:%M') if ag.scheduled_at else '—' }}
                     </span>
                     <strong style="color:var(--text-primary);">{{ ag.cliente }}</strong>
                     <small class="text-secondary">{{ ag.procedimento or '' }}</small>
@@ -48,8 +45,8 @@
 <div class="card card-pirataria mb-4" style="border-color:var(--gold-dark);">
     <div class="card-body text-center py-5">
         <img src="{{ url_for('static', filename='logos/logo-principal.png') }}" style="max-width:180px;margin-bottom:1rem;">
-        <h4 class="gold-text" style="font-size:1.8rem;">Bem-vindo ao Pirataria OS!</h4>
-        <p class="serif-subtitle mb-4">Seu sistema de gestão está pronto. Que tal começar?</p>
+        <h4 class="gold-text" style="font-size:1.8rem;">Bem vindo, {{ current_user.nome }}!</h4>
+        <p class="serif-subtitle mb-4">"O sucesso é a soma de pequenos esforços repetidos dia após dia."</p>
         <div class="d-flex justify-content-center gap-3 flex-wrap">
             <a href="{{ url_for('estoque.listar') }}" class="btn btn-pirataria">
                 <i class="bi bi-box-seam"></i> Adicionar Produtos

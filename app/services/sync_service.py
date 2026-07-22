@@ -89,6 +89,25 @@ def sync_from_google(studio_id):
         updated = event.get('updated', '')
         criados += _importar_evento(studio_id, eid, summary, description, start_dt, updated)
 
+    if integration.tasks_list_id and not events:
+        try:
+            tasks = google_service.listar_tarefas(
+                integration, client_id, client_secret,
+                integration.tasks_list_id, since,
+            )
+        except Exception as e:
+            logger.error('Sync de tasks falhou: %s', e)
+            tasks = []
+        for task in tasks:
+            tid = task.get('id')
+            title = task.get('title', '')
+            notes = task.get('notes', '')
+            due = task.get('due', '')
+            updated = task.get('updated', '')
+            if 'Parabéns' in title or 'aniversário' in title.lower():
+                continue
+            criados += _importar_evento(studio_id, tid, title, notes, due, updated)
+
     integration.last_sync_at = datetime.now(timezone.utc)
     db.session.commit()
     return criados, atualizados
