@@ -40,17 +40,22 @@ def _get_flow():
 @login_required
 def agenda():
     agora = datetime.now(timezone.utc)
-    proximos = Atendimento.query.filter(
-        Atendimento.studio_id == current_user.studio_id,
-        Atendimento.is_active == True,
-        Atendimento.scheduled_at >= agora,
-    ).order_by(Atendimento.scheduled_at.asc()).all()
 
-    passados = Atendimento.query.filter(
+    todos = Atendimento.query.filter(
         Atendimento.studio_id == current_user.studio_id,
         Atendimento.is_active == True,
-        Atendimento.scheduled_at < agora,
-    ).order_by(Atendimento.scheduled_at.desc()).limit(20).all()
+    ).all()
+
+    com_data = [a for a in todos if a.scheduled_at]
+    sem_data = [a for a in todos if not a.scheduled_at]
+
+    proximos = [a for a in com_data if a.scheduled_at >= agora]
+    proximos.sort(key=lambda a: a.scheduled_at)
+
+    passados = [a for a in com_data if a.scheduled_at < agora]
+    passados.sort(key=lambda a: a.scheduled_at, reverse=True)
+    passados.extend(reversed(sem_data))
+    passados = passados[:20]
 
     integration = CalendarIntegration.query.filter_by(studio_id=current_user.studio_id).first()
     return render_template(
