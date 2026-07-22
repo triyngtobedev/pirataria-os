@@ -1,5 +1,5 @@
 import logging
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 from flask import current_app
 
@@ -20,7 +20,7 @@ def sync_from_google(studio_id):
     if not client_id or not client_secret:
         return 0, 0
 
-    since = integration.last_sync_at or datetime.now(timezone.utc).replace(year=2020)
+    since = integration.last_sync_at or (datetime.now(timezone.utc) - timedelta(days=30))
     events = google_service.listar_mudancas(integration, client_id, client_secret, since)
     criados = 0
     atualizados = 0
