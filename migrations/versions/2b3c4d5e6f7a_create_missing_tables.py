@@ -1,0 +1,125 @@
+"""create missing tables (stock_movements, etc) for Railway DB
+
+Revision ID: 2b3c4d5e6f7a
+Revises: 1a2b3c4d5e6f
+Create Date: 2026-07-22 08:05:00.000000
+
+"""
+from alembic import op
+import sqlalchemy as sa
+
+
+revision = '2b3c4d5e6f7a'
+down_revision = '1a2b3c4d5e6f'
+branch_labels = None
+depends_on = None
+
+
+def upgrade():
+    conn = op.get_bind()
+    inspector = sa.inspect(conn)
+    existing = set(inspector.get_table_names())
+
+    if 'stock_movements' not in existing:
+        op.create_table('stock_movements',
+            sa.Column('id', sa.Integer(), nullable=False),
+            sa.Column('studio_id', sa.Integer(), nullable=False),
+            sa.Column('produto_id', sa.Integer(), nullable=False),
+            sa.Column('tipo', sa.String(length=50), nullable=False),
+            sa.Column('quantidade', sa.Integer(), nullable=False),
+            sa.Column('saldo_anterior', sa.Integer(), nullable=False),
+            sa.Column('saldo_posterior', sa.Integer(), nullable=False),
+            sa.Column('motivo', sa.String(length=500), nullable=True),
+            sa.Column('created_at', sa.DateTime(), nullable=True),
+            sa.Column('created_by_id', sa.Integer(), nullable=True),
+            sa.ForeignKeyConstraint(['created_by_id'], ['users.id'], ),
+            sa.ForeignKeyConstraint(['produto_id'], ['produtos.id'], ),
+            sa.ForeignKeyConstraint(['studio_id'], ['studios.id'], ),
+            sa.PrimaryKeyConstraint('id')
+        )
+
+    if 'activity_logs' not in existing:
+        op.create_table('activity_logs',
+            sa.Column('id', sa.Integer(), nullable=False),
+            sa.Column('studio_id', sa.Integer(), nullable=False),
+            sa.Column('user_id', sa.Integer(), nullable=True),
+            sa.Column('acao', sa.String(length=100), nullable=False),
+            sa.Column('entidade', sa.String(length=100), nullable=False),
+            sa.Column('entidade_id', sa.Integer(), nullable=True),
+            sa.Column('descricao', sa.String(length=500), nullable=True),
+            sa.Column('detalhes', sa.Text(), nullable=True),
+            sa.Column('created_at', sa.DateTime(), nullable=True),
+            sa.ForeignKeyConstraint(['studio_id'], ['studios.id'], ),
+            sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
+            sa.PrimaryKeyConstraint('id')
+        )
+
+    if 'insumos' not in existing:
+        op.create_table('insumos',
+            sa.Column('id', sa.Integer(), nullable=False),
+            sa.Column('studio_id', sa.Integer(), nullable=False),
+            sa.Column('nome', sa.String(length=200), nullable=False),
+            sa.Column('categoria', sa.String(length=100), nullable=True),
+            sa.Column('quantidade', sa.Float(), nullable=True),
+            sa.Column('unidade', sa.String(length=50), nullable=True),
+            sa.Column('custo_unitario', sa.Float(), nullable=True),
+            sa.Column('fornecedor', sa.String(length=200), nullable=True),
+            sa.Column('local_fisico', sa.String(length=200), nullable=True),
+            sa.Column('is_active', sa.Boolean(), nullable=True),
+            sa.Column('created_at', sa.DateTime(), nullable=True),
+            sa.Column('updated_at', sa.DateTime(), nullable=True),
+            sa.Column('deleted_at', sa.DateTime(), nullable=True),
+            sa.Column('created_by_id', sa.Integer(), nullable=True),
+            sa.ForeignKeyConstraint(['created_by_id'], ['users.id'], ),
+            sa.ForeignKeyConstraint(['studio_id'], ['studios.id'], ),
+            sa.PrimaryKeyConstraint('id')
+        )
+
+    if 'atendimentos' not in existing:
+        op.create_table('atendimentos',
+            sa.Column('id', sa.Integer(), nullable=False),
+            sa.Column('studio_id', sa.Integer(), nullable=False),
+            sa.Column('cliente', sa.String(length=200), nullable=False),
+            sa.Column('procedimento', sa.String(length=200), nullable=True),
+            sa.Column('joia_utilizada', sa.String(length=200), nullable=True),
+            sa.Column('valor', sa.Float(), nullable=True),
+            sa.Column('forma_pagamento', sa.String(length=50), nullable=True),
+            sa.Column('piercer', sa.String(length=200), nullable=True),
+            sa.Column('status', sa.String(length=50), nullable=True),
+            sa.Column('is_active', sa.Boolean(), nullable=True),
+            sa.Column('created_at', sa.DateTime(), nullable=True),
+            sa.Column('updated_at', sa.DateTime(), nullable=True),
+            sa.Column('deleted_at', sa.DateTime(), nullable=True),
+            sa.Column('created_by_id', sa.Integer(), nullable=True),
+            sa.ForeignKeyConstraint(['created_by_id'], ['users.id'], ),
+            sa.ForeignKeyConstraint(['studio_id'], ['studios.id'], ),
+            sa.PrimaryKeyConstraint('id')
+        )
+
+    if 'produtos' not in existing:
+        op.create_table('produtos',
+            sa.Column('id', sa.Integer(), nullable=False),
+            sa.Column('studio_id', sa.Integer(), nullable=False),
+            sa.Column('nome', sa.String(length=200), nullable=False),
+            sa.Column('tipo_joia', sa.String(length=100), nullable=True),
+            sa.Column('material', sa.String(length=100), nullable=True),
+            sa.Column('local_aplicacao', sa.String(length=100), nullable=True),
+            sa.Column('quantidade', sa.Integer(), nullable=True),
+            sa.Column('custo', sa.Float(), nullable=True),
+            sa.Column('valor_venda', sa.Float(), nullable=True),
+            sa.Column('local_fisico', sa.String(length=200), nullable=True),
+            sa.Column('foto', sa.String(length=500), nullable=True),
+            sa.Column('favorito', sa.Boolean(), nullable=True),
+            sa.Column('is_active', sa.Boolean(), nullable=True),
+            sa.Column('created_at', sa.DateTime(), nullable=True),
+            sa.Column('updated_at', sa.DateTime(), nullable=True),
+            sa.Column('deleted_at', sa.DateTime(), nullable=True),
+            sa.Column('created_by_id', sa.Integer(), nullable=True),
+            sa.ForeignKeyConstraint(['created_by_id'], ['users.id'], ),
+            sa.ForeignKeyConstraint(['studio_id'], ['studios.id'], ),
+            sa.PrimaryKeyConstraint('id')
+        )
+
+
+def downgrade():
+    pass
