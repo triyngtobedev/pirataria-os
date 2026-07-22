@@ -52,7 +52,7 @@
                 <small class="text-secondary">{{ ag.procedimento or '' }}{% if ag.joia_utilizada %} — {{ ag.joia_utilizada }}{% endif %}</small>
             </div>
             <div class="text-end">
-                {% if ag.valor %}<span class="gold-text fw-bold">R$ {{ "%.0f"|format(ag.valor) }}</span>{% endif %}
+                {% if ag.valor %}<span class="gold-text fw-bold">{{ "%.0f"|format(ag.valor) }}</span>{% endif %}
                 {% if ag.piercer %}<br><small class="text-secondary">{{ ag.piercer }}</small>{% endif %}
             </div>
         </div>
@@ -88,7 +88,7 @@
                 <small class="text-secondary">{{ ag.procedimento or '' }}</small>
             </div>
             <div class="text-end">
-                <span class="gold-text fw-bold">R$ {{ "%.0f"|format(ag.valor) }}</span><br>
+                <span class="gold-text fw-bold">{{ "%.0f"|format(ag.valor) }}</span><br>
                 <small class="text-secondary">{{ ag.forma_pagamento }}</small>
             </div>
         </div>

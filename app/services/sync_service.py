@@ -1,4 +1,5 @@
 import logging
+import re
 from datetime import datetime, timedelta, timezone
 
 from flask import current_app
@@ -8,6 +9,17 @@ from app.models.schemas import CalendarIntegration, Atendimento
 from app.services import google_service
 
 logger = logging.getLogger(__name__)
+
+
+def _extrair_horario_do_titulo(titulo):
+    padroes = [r'(\d{1,2})[hH:](\d{2})', r'(\d{1,2})[hH]']
+    for padrao in padroes:
+        m = re.search(padrao, titulo)
+        if m:
+            h, mm = int(m.group(1)), int(m.group(2)) if m.lastindex == 2 else 0
+            if 0 <= h <= 23 and 0 <= mm <= 59:
+                return h, mm
+    return None, None
 
 
 def _importar_evento(studio_id, event_id, summary, description, start_dt, event_updated_str):
@@ -122,6 +134,10 @@ def sync_from_google(studio_id):
             updated = task.get('updated', '')
             if 'Parabéns' in title or 'aniversário' in title.lower():
                 continue
+            h, m = _extrair_horario_do_titulo(title)
+            if h is not None and due:
+                dt = datetime.fromisoformat(due.replace('Z', '+00:00'))
+                due = dt.replace(hour=h, minute=m, second=0, microsecond=0).isoformat() + 'Z'
             criados += _importar_evento(studio_id, tid, title, notes, due, updated)
 
     integration.last_sync_at = datetime.now(timezone.utc)
