@@ -13,7 +13,7 @@ def login():
         user = User.query.filter_by(email=email).first()
         if user and user.check_password(password):
             login_user(user)
-            return redirect(url_for('dashboard.index'))
+            return redirect(url_for('dashboard.dashboard'))
         flash('Email ou senha inválidos.', 'danger')
     return render_template('auth/login.html')
 
@@ -47,4 +47,4 @@ def register():
 @login_required
 def logout():
     logout_user()
-    return redirect(url_for('auth.login'))
+    return redirect(url_for('dashboard.index'))

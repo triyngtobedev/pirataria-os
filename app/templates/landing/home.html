@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#d4a843">
+    <title>Pirataria Body Art OS</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .hero-section {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            background: linear-gradient(180deg, #0d0d0d 0%, #0a0a0a 100%);
+        }
+        .hero-logo { max-width: 260px; width: 100%; }
+        .feature-card {
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s;
+            height: 100%;
+        }
+        .feature-card:hover {
+            border-color: var(--gold-dark);
+            box-shadow: 0 0 20px rgba(212,168,67,0.05);
+        }
+        .cta-section {
+            border-top: 2px solid var(--border-color);
+            border-bottom: 2px solid var(--border-color);
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-pirataria">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <img src="{{ url_for('static', filename='logos/logo-principal.png') }}" alt="Pirataria" class="brand-logo">
+            </a>
+            <div class="d-flex gap-2">
+                <a href="{{ url_for('auth.login') }}" class="btn btn-outline-pirataria btn-sm">Entrar</a>
+                <a href="{{ url_for('auth.register') }}" class="btn btn-pirataria btn-sm">Cadastrar</a>
+            </div>
+        </div>
+    </nav>
+
+    <section class="hero-section">
+        <div class="container text-center">
+            <img src="{{ url_for('static', filename='logos/logo-principal.png') }}" alt="Pirataria Body Art" class="hero-logo mb-4">
+            <h1 class="gold-text" style="font-size:2.8rem;">PIRATARIA BODY ART</h1>
+            <p class="serif-subtitle" style="font-size:1.3rem;max-width:500px;margin:0 auto 2rem;">
+                Sistema de gestão inteligente para estúdios de body piercing e tatuagem
+            </p>
+            <div class="d-flex justify-content-center gap-3 flex-wrap">
+                <a href="{{ url_for('auth.register') }}" class="btn btn-pirataria" style="font-size:1.1rem;padding:0.7rem 2rem;">
+                    <i class="bi bi-rocket-takeoff"></i> Começar Grátis
+                </a>
+                <a href="{{ url_for('auth.login') }}" class="btn btn-outline-pirataria" style="font-size:1.1rem;padding:0.7rem 2rem;">
+                    Entrar
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-5">
+        <div class="container">
+            <h3 class="gold-text text-center mb-5 section-header d-inline-block w-100">Tudo que seu estúdio precisa</h3>
+            <div class="row g-4 mt-3">
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <i class="bi bi-box-seam gold-text" style="font-size:2.5rem;"></i>
+                        <h5 class="gold-text mt-3">Estoque Inteligente</h5>
+                        <p class="text-secondary serif-subtitle">Controle de joias e materiais com alertas automáticos de reposição</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <i class="bi bi-clipboard-check gold-text" style="font-size:2.5rem;"></i>
+                        <h5 class="gold-text mt-3">Atendimentos</h5>
+                        <p class="text-secondary serif-subtitle">Registro completo com baixa automática de estoque e faturamento</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <i class="bi bi-bar-chart gold-text" style="font-size:2.5rem;"></i>
+                        <h5 class="gold-text mt-3">Dashboard</h5>
+                        <p class="text-secondary serif-subtitle">Visão clara do dia: faturamento, procedimentos e métricas</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-5 text-center cta-section">
+        <div class="container">
+            <p class="serif-subtitle mb-2" style="font-style:italic;color:var(--gold);">
+                "O bem que você faz hoje é a semente que floresce amanhã."
+            </p>
+            <small class="text-secondary">— André Luiz</small>
+        </div>
+    </section>
+
+    <footer class="py-4 text-center">
+        <div class="container">
+            <p class="text-secondary serif-subtitle" style="font-size:0.85rem;">
+                ✦ Pirataria Body Art OS v0.1 ✦
+            </p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
