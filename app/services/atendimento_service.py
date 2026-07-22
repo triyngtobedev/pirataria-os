@@ -1,4 +1,5 @@
 import logging
+from datetime import datetime, timezone
 from flask import current_app
 
 from app import db
@@ -7,6 +8,7 @@ from app.repositories.atendimento_repo import AtendimentoRepository
 from app.repositories.produto_repo import ProdutoRepository
 from app.repositories.stock_movement_repo import StockMovementRepository
 from app.services.activity_service import ActivityService
+from app.services.notification_service import NotificationService
 from app.services import google_service
 
 logger = logging.getLogger(__name__)
@@ -55,6 +57,15 @@ class AtendimentoService:
 
         _sync_create_event(a)
 
+        if a.scheduled_at and a.scheduled_at > datetime.now(timezone.utc).replace(tzinfo=None):
+            NotificationService.criar(
+                studio_id=studio_id,
+                tipo='novo_agendamento',
+                titulo=f'Novo agendamento: {a.cliente}',
+                mensagem=f'{a.procedimento or "Procedimento"} agendado para {a.scheduled_at.strftime("%d/%m %H:%M")}',
+                link='/agenda',
+            )
+
         return a
 
     @staticmethod
@@ -87,6 +98,7 @@ def _sync_create_event(atendimento):
             valor=atendimento.valor or 0,
             pagamento=atendimento.forma_pagamento or '',
             piercer=atendimento.piercer or '',
+            data_hora=atendimento.scheduled_at,
         )
         atendimento.google_event_id = event_id
         db.session.commit()

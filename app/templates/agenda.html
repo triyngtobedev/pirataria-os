@@ -3,7 +3,11 @@
 {% block content %}
 
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h4 class="gold-text mb-0"><i class="bi bi-calendar-event"></i> Agenda</h4>
+    <h4 class="gold-text mb-0"><i class="bi bi-calendar-event"></i> Agenda
+        {% if proximos %}
+        <span class="badge" style="background:var(--gold);color:#000;font-size:0.9rem;vertical-align:middle;margin-left:0.5rem;">{{ proximos|length }}</span>
+        {% endif %}
+    </h4>
     <div class="d-flex gap-2">
         {% if integration %}
         <a href="{{ url_for('calendar.sync_now') }}" class="btn btn-pirataria btn-sm">
@@ -88,7 +92,7 @@
                 <small class="text-secondary">{{ ag.procedimento or '' }}</small>
             </div>
             <div class="text-end">
-                {% if ag.valor %}<span class="gold-text fw-bold">{{ "%.0f"|format(ag.valor) }}</span>{% endif %}
+                {% if ag.valor is not none %}<span class="gold-text fw-bold">{{ "%.0f"|format(ag.valor) }}</span>{% endif %}
                 {% if ag.forma_pagamento %}<br><small class="text-secondary">{{ ag.forma_pagamento }}</small>{% endif %}
             </div>
         </div>

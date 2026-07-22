@@ -1,7 +1,9 @@
 from datetime import datetime, timezone, date
+from app import db
 from app.repositories.atendimento_repo import AtendimentoRepository
 from app.repositories.produto_repo import ProdutoRepository
 from app.models.schemas import Atendimento, CalendarIntegration
+from app.services.notification_service import NotificationService
 from app.quotes import quote_of_the_day
 
 
@@ -22,17 +24,12 @@ class DashboardService:
         proximos = Atendimento.query.filter(
             Atendimento.studio_id == studio_id,
             Atendimento.is_active == True,
-        ).order_by(Atendimento.scheduled_at.asc().nullsfirst()).limit(50).all()
-        proximos = [a for a in proximos if not a.scheduled_at or a.scheduled_at.date() >= hoje][:3]
-        
-        import logging
-        logging.getLogger(__name__).info('Dashboard: %d atendimentos totais, %d proximos, hoje=%s',
-                                          len(Atendimento.query.filter(
-                                              Atendimento.studio_id == studio_id,
-                                              Atendimento.is_active == True,
-                                          ).all()),
-                                          len(proximos), hoje)
-        
+            Atendimento.scheduled_at.isnot(None),
+            db.func.date(Atendimento.scheduled_at) >= hoje,
+        ).order_by(Atendimento.scheduled_at.asc()).limit(3).all()
+
+        notificacoes = NotificationService.listar_nao_lidas(studio_id, limite=5)
+
         tem_calendario = CalendarIntegration.query.filter_by(studio_id=studio_id).first() is not None
 
         return {
@@ -51,5 +48,6 @@ class DashboardService:
             'atendimentos_hoje': atendimentos_hoje,
             'total_produtos': total_produtos,
             'proximos_agendamentos': proximos,
+            'notificacoes': notificacoes,
             'tem_calendario': tem_calendario,
         }

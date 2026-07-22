@@ -209,6 +209,20 @@ class ActivityLog(db.Model):
     user = db.relationship('User', foreign_keys=[user_id])
 
 
+class Notification(db.Model):
+    __tablename__ = 'notifications'
+    id = db.Column(db.Integer, primary_key=True)
+    studio_id = db.Column(db.Integer, db.ForeignKey('studios.id'), nullable=False)
+    tipo = db.Column(db.String(50), nullable=False, default='novo_agendamento')
+    titulo = db.Column(db.String(200), nullable=False)
+    mensagem = db.Column(db.String(500), default='')
+    lida = db.Column(db.Boolean, default=False)
+    link = db.Column(db.String(500), default='')
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+
+    studio = db.relationship('Studio', backref='notifications')
+
+
 @login_manager.user_loader
 def load_user(user_id):
     return db.session.get(User, int(user_id))
