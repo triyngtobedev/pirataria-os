@@ -11,10 +11,13 @@
                 <h6 class="gold-text mb-1">Próximo(s) Agendamento(s)</h6>
                 {% for ag in proximos_agendamentos %}
                 <div class="d-flex align-items-center gap-3 py-1">
-                    <span class="badge" style="background:var(--gold-dark);font-size:0.8rem;">
-                        {{ ag.scheduled_at.strftime('%d/%m %H:%M') if ag.scheduled_at else '—' }}
+                    <span class="badge" style="background:var(--gold-dark);font-size:0.8rem;color:var(--text-primary);">
+                        {{ ag.scheduled_at.strftime('%d/%m') if ag.scheduled_at else '—' }}
+                        {% if ag.scheduled_at and ag.scheduled_at.strftime('%H:%M') != '00:00' %}
+                        {{ ag.scheduled_at.strftime('%H:%M') }}
+                        {% endif %}
                     </span>
-                    <strong>{{ ag.cliente }}</strong>
+                    <strong style="color:var(--text-primary);">{{ ag.cliente }}</strong>
                     <small class="text-secondary">{{ ag.procedimento or '' }}</small>
                 </div>
                 {% endfor %}
