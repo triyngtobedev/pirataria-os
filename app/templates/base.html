@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-br" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
@@ -14,6 +14,15 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script>
+        (function(){
+            var t = localStorage.getItem('pirataria_theme') || 'system';
+            if (t === 'system') {
+                t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            }
+            document.documentElement.setAttribute('data-theme', t);
+        })();
+    </script>
 </head>
 <body>
     {% if current_user.is_authenticated %}
@@ -35,6 +44,7 @@
                     <li class="nav-item"><a class="nav-link {% if '/insumos' in request.path %}active{% endif %}" href="{{ url_for('insumos.listar') }}"><i class="bi bi-capsule"></i>Insumos</a></li>
                     <li class="nav-item"><a class="nav-link {% if '/atendimento' in request.path %}active{% endif %}" href="{{ url_for('atendimento.listar') }}"><i class="bi bi-clipboard-check"></i>Atendimentos</a></li>
                     <li class="nav-item"><a class="nav-link {% if '/financeiro' in request.path %}active{% endif %}" href="{{ url_for('financeiro.mensal') }}"><i class="bi bi-graph-up"></i>Financeiro</a></li>
+                    <li class="nav-item"><button class="nav-link theme-btn" onclick="alternarTema()" title="Alternar tema" style="border:none;background:transparent;padding:0.5rem 1rem;"><i class="bi" id="iconeTema"></i></button></li>
                     <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.logout') }}"><i class="bi bi-box-arrow-right"></i>Sair</a></li>
                 </ul>
             </div>
@@ -65,6 +75,46 @@
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('{{ url_for("static", filename="sw.js") }}');
         }
+
+        function getTemaAtual() {
+            var t = localStorage.getItem('pirataria_theme') || 'system';
+            return t;
+        }
+
+        function getTemaEfetivo() {
+            var t = getTemaAtual();
+            if (t === 'system') {
+                return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            }
+            return t;
+        }
+
+        function atualizarIcone() {
+            var t = getTemaAtual();
+            var icone = document.getElementById('iconeTema');
+            if (!icone) return;
+            if (t === 'light') icone.className = 'bi bi-sun-fill';
+            else if (t === 'dark') icone.className = 'bi bi-moon-fill';
+            else icone.className = 'bi bi-circle-half';
+        }
+
+        function alternarTema() {
+            var t = getTemaAtual();
+            var map = { 'light': 'dark', 'dark': 'system', 'system': 'light' };
+            var novo = map[t] || 'light';
+            localStorage.setItem('pirataria_theme', novo);
+            var efetivo = getTemaEfetivo();
+            document.documentElement.setAttribute('data-theme', efetivo);
+            atualizarIcone();
+        }
+
+        document.addEventListener('DOMContentLoaded', atualizarIcone);
+
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function() {
+            if (getTemaAtual() === 'system') {
+                document.documentElement.setAttribute('data-theme', getTemaEfetivo());
+            }
+        });
     </script>
 </body>
 </html>

@@ -10,12 +10,40 @@
     --gold-dark: #8a6c22;
     --text-primary: #1a1a1a;
     --text-secondary: #4a4a4a;
+    --text-muted: #888;
     --red-accent: #c0392b;
     --red-bg: rgba(192, 57, 43, 0.08);
     --green-accent: #27ae60;
     --green-bg: rgba(39, 174, 96, 0.08);
     --yellow-accent: #d4a017;
     --yellow-bg: rgba(212, 160, 23, 0.08);
+    --shadow: rgba(0,0,0,0.08);
+    --badge-bg: rgba(0,0,0,0.05);
+    --badge-text: #333;
+    --btn-text: #fff;
+}
+
+[data-theme="dark"] {
+    --bg-dark: #0a0a0a;
+    --bg-card: #1a1a1a;
+    --bg-card-hover: #222;
+    --border-color: #2a2a2a;
+    --gold: #d4a843;
+    --gold-light: #f0d080;
+    --gold-dark: #a88530;
+    --text-primary: #ffffff;
+    --text-secondary: #cccccc;
+    --text-muted: #999;
+    --red-accent: #e74c3c;
+    --red-bg: rgba(231, 76, 60, 0.15);
+    --green-accent: #2ecc71;
+    --green-bg: rgba(46, 204, 113, 0.15);
+    --yellow-accent: #f1c40f;
+    --yellow-bg: rgba(241, 196, 15, 0.15);
+    --shadow: rgba(212,168,67,0.05);
+    --badge-bg: rgba(255,255,255,0.1);
+    --badge-text: #e0e0e0;
+    --btn-text: #0a0a0a;
 }
 
 * { box-sizing: border-box; }
@@ -57,11 +85,6 @@ h1, h2, h3, h4, h5, h6,
 
 .navbar-pirataria .navbar-brand:hover {
     opacity: 0.85;
-}
-
-.modal-content {
-    background: #fff !important;
-    color: #1a1a1a !important;
 }
 
 .navbar-pirataria .navbar-brand .brand-text {
@@ -116,7 +139,7 @@ h1, h2, h3, h4, h5, h6,
 
 .card-pirataria:hover {
     border-color: var(--gold-dark);
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 2px 12px var(--shadow);
 }
 
 .card-pirataria .card-body { padding: 1.5rem; }
@@ -131,7 +154,7 @@ h1, h2, h3, h4, h5, h6,
 .card-pirataria .card-value {
     font-size: 2rem;
     font-weight: 700;
-    color: #1a1a1a;
+    color: var(--text-primary);
     font-family: 'Pirata One', serif;
     letter-spacing: 1px;
 }
@@ -150,7 +173,7 @@ h1, h2, h3, h4, h5, h6,
 .btn-pirataria {
     background: linear-gradient(135deg, var(--gold-dark), var(--gold), var(--gold-dark));
     border: none;
-    color: #fff;
+    color: var(--btn-text);
     font-weight: 700;
     font-family: 'Pirata One', serif;
     font-size: 1rem;
@@ -163,7 +186,7 @@ h1, h2, h3, h4, h5, h6,
 
 .btn-pirataria:hover {
     background: linear-gradient(135deg, var(--gold), var(--gold-light), var(--gold));
-    color: #fff;
+    color: var(--btn-text);
     transform: translateY(-1px);
     box-shadow: 0 4px 20px rgba(168, 133, 48, 0.3);
 }
@@ -214,12 +237,12 @@ h1, h2, h3, h4, h5, h6,
 .table-pirataria td {
     border-color: var(--border-color) !important;
     vertical-align: middle;
-    color: #1a1a1a;
+    color: var(--text-primary);
     font-size: 0.9rem;
 }
 
 .table-pirataria td small {
-    color: #555555;
+    color: var(--text-secondary);
     font-size: 0.9rem;
 }
 
@@ -233,9 +256,9 @@ h1, h2, h3, h4, h5, h6,
 }
 
 .form-pirataria {
-    background: #fafafa;
+    background: var(--bg-card-hover);
     border: 2px solid var(--border-color);
-    color: #1a1a1a;
+    color: var(--text-primary);
     border-radius: 4px;
     padding: 0.6rem 1rem;
     font-family: 'Playfair Display', serif;
@@ -244,12 +267,12 @@ h1, h2, h3, h4, h5, h6,
 .form-pirataria:focus {
     border-color: var(--gold);
     box-shadow: 0 0 0 0.2rem rgba(168, 133, 48, 0.15);
-    background: #fff;
-    color: #1a1a1a;
+    background: var(--bg-card);
+    color: var(--text-primary);
 }
 
-.form-pirataria::placeholder { color: #999; font-style: italic; }
-.form-pirataria option { background: #fff; color: #1a1a1a; }
+.form-pirataria::placeholder { color: var(--text-muted); font-style: italic; }
+.form-pirataria option { background: var(--bg-card); color: var(--text-primary); }
 
 .form-pirataria[type="file"]::-webkit-file-upload-button {
     background: linear-gradient(135deg, var(--gold-dark), var(--gold));
@@ -300,7 +323,7 @@ h1, h2, h3, h4, h5, h6,
 
 .footer-pirataria {
     border-top: 2px solid var(--border-color);
-    color: #777;
+    color: var(--text-muted);
     font-size: 0.8rem;
     padding: 1.5rem 0;
     margin-top: 3rem;
@@ -321,6 +344,8 @@ h1, h2, h3, h4, h5, h6,
 .empty-state i { font-size: 3rem; opacity: 0.2; }
 
 .modal-content {
+    background: var(--bg-card) !important;
+    color: var(--text-primary) !important;
     border-radius: 4px !important;
     border: 2px solid var(--gold-dark) !important;
 }
@@ -387,4 +412,25 @@ input[type="number"]::-webkit-inner-spin-button {
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
+}
+
+.theme-btn {
+    background: transparent;
+    border: 1px solid var(--gold-dark);
+    color: var(--gold);
+    border-radius: 4px;
+    padding: 0.25rem 0.5rem;
+    font-size: 1.1rem;
+    cursor: pointer;
+    line-height: 1;
+    transition: all 0.2s;
+}
+
+.theme-btn:hover {
+    background: var(--gold);
+    color: #000;
+}
+
+[data-theme="dark"] .btn-close {
+    filter: invert(1) grayscale(100%) brightness(200%);
 }
