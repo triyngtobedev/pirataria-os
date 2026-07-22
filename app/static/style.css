@@ -49,8 +49,12 @@ h1, h2, h3, h4, h5, h6,
 }
 
 .navbar-pirataria .navbar-brand .brand-logo {
-    height: 36px;
+    height: 40px;
     width: auto;
+}
+
+.navbar-pirataria .navbar-brand:hover {
+    opacity: 0.9;
 }
 
 .navbar-pirataria .navbar-brand .brand-text {
@@ -282,7 +286,8 @@ h1, h2, h3, h4, h5, h6,
 
 /* Login page logo */
 .login-logo {
-    max-width: 200px;
+    max-width: 280px;
+    width: 100%;
     height: auto;
     margin-bottom: 1rem;
 }
