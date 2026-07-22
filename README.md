@@ -26,12 +26,13 @@ Controle seu catálogo de joias, registre atendimentos com baixa automática de 
 
 ### Recursos
 
-- **Catálogo de Joias** — Cadastro completo com tipo, material, local de aplicação, custo, valor de venda e foto opcional
-- **Atendimentos** — Registro com baixa automática de estoque, formas de pagamento (Pix, Dinheiro, Cartão)
-- **Insumos** — Controle de estoque de materiais de consumo (luvas, agulhas, antissépticos etc.)
-- **Financeiro** — Planilha mensal com receita, custo, lucro e divisão por forma de pagamento
+- **Catálogo de Joias** — Cadastro completo com tipo, material, local de aplicação, custo, valor de venda, foto opcional e filtros de ordenação (nome, quantidade, custo, venda)
+- **Atendimentos** — Registro com baixa automática de estoque, formas de pagamento (Pix, Dinheiro, Cartão), busca e ordenação por cliente, valor e data
+- **Insumos** — Controle de estoque de materiais de consumo (luvas, agulhas, antissépticos etc.) com ordenação por nome, quantidade e custo
+- **Financeiro** — Planilha anual com receita, custo, lucro e divisão por forma de pagamento, ordenável por mês, atendimentos, receita e lucro
 - **Multi-estúdio** — Cadastro separado por estúdio, dados 100% isolados
 - **Dashboard** — Visão geral do dia: faturamento, procedimentos, clientes, estoque baixo + frase motivacional diária
+- **Tema dark/light** — Alternador com 3 modos: claro, escuro e automático (sistema)
 - **PWA** — Instala como aplicativo no celular via navegador
 - **Docker** — Pronto para deploy em produção
 - **Landing page** — Apresentação do sistema para visitantes
@@ -89,10 +90,10 @@ pirataria-os/
 ## ✦ Funcionalidades em detalhe
 
 ### Dashboard
-Visão consolidada do dia: faturamento, número de procedimentos, clientes atendidos, formas de pagamento, itens com estoque baixo e uma frase motivacional diária com temas de filosofia e espiritismo.
+Visão consolidada do dia: faturamento, número de procedimentos, clientes atendidos, formas de pagamento, itens com estoque baixo, frase motivacional diária e tema adaptável (claro/escuro/sistema).
 
 ### Catálogo de Joias
-Cadastro completo com nome, tipo (argola, barbell, banana etc.), material (titânio, aço, ouro 18k etc.), local de aplicação, quantidade em estoque, custo, valor de venda e **foto opcional** com visualização em modal expandido.
+Cadastro completo com nome, tipo (argola, barbell, banana etc.), material (titânio, aço, ouro 18k etc.), local de aplicação, quantidade em estoque, custo, valor de venda e **foto opcional** com visualização em modal expandido. Busca por texto em tempo real, filtro por status de estoque, favoritos e ordenação por nome, quantidade, custo ou valor de venda.
 
 ### Atendimentos
 Registro de atendimentos com busca inteligente de joias no estoque. Ao selecionar uma joia, a quantidade é baixada automaticamente. Suporte a múltiplas formas de pagamento.
@@ -162,7 +163,7 @@ MIT — Use, modifique e distribua à vontade.
 ---
 
 <p align="center">
-  <sub>✦ Pirataria Body Art OS v0.1 ✦</sub>
+  <sub>✦ Pirataria Body Art OS v0.2 ✦</sub>
   <br>
   <sub>Feito com dedicação para a cultura do body piercing brasileiro</sub>
 </p>
