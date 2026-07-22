@@ -1,5 +1,6 @@
-from flask import Blueprint, render_template, redirect, url_for, request, flash
-from flask_login import login_user, logout_user, login_required
+import logging
+from flask import Blueprint, render_template, redirect, url_for, request, flash, current_app
+from flask_login import login_user, logout_user, login_required, current_user
 from app.middleware.tenant import inject_studio
 from app.services.auth_service import AuthService
 
@@ -18,6 +19,11 @@ def login():
         if user:
             login_user(user)
             return redirect(url_for('dashboard.dashboard'))
+        current_app.logger.warning(
+            'Login failed for %s: user=%s',
+            email,
+            user  # None if not found or inactive
+        )
         flash('Email ou senha inválidos.', 'danger')
     return render_template('auth/login.html')
 
