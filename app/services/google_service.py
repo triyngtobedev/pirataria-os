@@ -100,6 +100,15 @@ def excluir_evento(integration, client_id, client_secret, event_id):
         logger.warning('Erro ao excluir evento %s: %s', event_id, e)
 
 
+def listar_calendarios(integration, client_id, client_secret):
+    service = get_calendar_service(integration, client_id, client_secret)
+    cal_list = service.calendarList().list().execute()
+    return [
+        {'id': c['id'], 'summary': c.get('summary', c['id']), 'primary': c.get('primary', False)}
+        for c in cal_list.get('items', [])
+    ]
+
+
 def listar_mudancas(integration, client_id, client_secret, since):
     service = get_calendar_service(integration, client_id, client_secret)
     calendar_id = integration.calendar_id or 'primary'

@@ -15,6 +15,11 @@
                         <span class="text-muted small">{{ integration.google_email or '' }}</span>
                     </div>
                     <p class="small text-muted mb-2">
+                        <i class="bi bi-calendar"></i> Calendário:
+                        <strong>{{ integration.calendar_id or 'Principal' }}</strong>
+                        &nbsp;<a href="{{ url_for('calendar.listar_calendarios') }}" class="text-warning small">Trocar</a>
+                    </p>
+                    <p class="small text-muted mb-2">
                         <i class="bi bi-arrow-repeat"></i> Última sincronia:
                         {% if integration.last_sync_at %}
                             {{ integration.last_sync_at.strftime('%d/%m/%Y %H:%M') }}

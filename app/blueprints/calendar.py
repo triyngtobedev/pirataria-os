@@ -119,13 +119,47 @@ def callback():
             current_app.config['GOOGLE_CLIENT_SECRET'],
         )
         about = service.calendars().get(calendarId='primary').execute()
-        integration.calendar_id = about.get('id')
+        if not integration.calendar_id:
+            integration.calendar_id = about.get('id')
         integration.google_email = about.get('summary')
     except Exception as e:
         logger.warning('Erro ao obter info do calendario: %s', e)
 
     db.session.commit()
     flash('Google Agenda conectada com sucesso!', 'success')
+    return redirect(url_for('calendar.settings'))
+
+
+@calendar_bp.route('/calendar/calendars')
+@login_required
+def listar_calendarios():
+    integration = CalendarIntegration.query.filter_by(studio_id=current_user.studio_id).first()
+    if not integration:
+        flash('Conecte o Google Agenda primeiro.', 'danger')
+        return redirect(url_for('calendar.settings'))
+    try:
+        calendarios = google_service.listar_calendarios(
+            integration,
+            current_app.config['GOOGLE_CLIENT_ID'],
+            current_app.config['GOOGLE_CLIENT_SECRET'],
+        )
+    except Exception as e:
+        logger.error('Erro ao listar calendarios: %s', e)
+        flash('Erro ao listar calendarios. Reconecte sua conta.', 'danger')
+        return redirect(url_for('calendar.settings'))
+    return render_template('calendar_pick.html', calendarios=calendarios, integration=integration)
+
+
+@calendar_bp.route('/calendar/select/<path:calendar_id>')
+@login_required
+def select_calendar(calendar_id):
+    integration = CalendarIntegration.query.filter_by(studio_id=current_user.studio_id).first()
+    if not integration:
+        flash('Conecte o Google Agenda primeiro.', 'danger')
+        return redirect(url_for('calendar.settings'))
+    integration.calendar_id = calendar_id
+    db.session.commit()
+    flash('Calendário selecionado com sucesso!', 'success')
     return redirect(url_for('calendar.settings'))
 
 
