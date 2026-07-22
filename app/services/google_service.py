@@ -131,8 +131,10 @@ def listar_tarefas(integration, client_id, client_secret, tasklist_id, since=Non
     if since:
         if isinstance(since, datetime):
             if since.tzinfo is None:
-                since = since.replace(tzinfo=timezone.utc)
-            params['updatedMin'] = since.isoformat()
+                since_dt = since.replace(tzinfo=timezone.utc)
+            else:
+                since_dt = since
+            params['updatedMin'] = since_dt.strftime('%Y-%m-%dT%H:%M:%SZ')
         else:
             params['updatedMin'] = since
     tasks = []
@@ -165,8 +167,14 @@ def listar_mudancas(integration, client_id, client_secret, since):
         'singleEvents': True,
     }
     if since:
-        params['orderBy'] = 'updated'
-        params['updatedMin'] = since.isoformat()
+        if isinstance(since, datetime):
+            if since.tzinfo is None:
+                since_dt = since.replace(tzinfo=timezone.utc)
+            else:
+                since_dt = since
+            params['updatedMin'] = since_dt.strftime('%Y-%m-%dT%H:%M:%SZ')
+        else:
+            params['updatedMin'] = since
     else:
         params['orderBy'] = 'startTime'
         params['timeMin'] = (datetime.now(timezone.utc) - timedelta(days=365)).isoformat()
