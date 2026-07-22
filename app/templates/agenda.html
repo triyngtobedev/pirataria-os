@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% block title %}Agenda — Pirataria Body Art OS{% endblock %}
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="gold-text mb-0"><i class="bi bi-calendar-event"></i> Agenda</h4>
+    <div class="d-flex gap-2">
+        {% if integration %}
+        <a href="{{ url_for('calendar.sync_now') }}" class="btn btn-pirataria btn-sm">
+            <i class="bi bi-arrow-repeat"></i> Sincronizar
+        </a>
+        {% endif %}
+        <a href="{{ url_for('calendar.settings') }}" class="btn btn-outline-pirataria btn-sm">
+            <i class="bi bi-gear"></i> Config
+        </a>
+    </div>
+</div>
+
+{% if not integration %}
+<div class="card card-pirataria mb-4" style="border-color:var(--gold-dark);">
+    <div class="card-body text-center py-4">
+        <i class="bi bi-google" style="font-size:3rem;color:var(--text-muted);"></i>
+        <h5 class="gold-text mt-2">Conecte sua Google Agenda</h5>
+        <p class="serif-subtitle">Sincronize seus atendimentos automaticamente.</p>
+        <a href="{{ url_for('calendar.connect') }}" class="btn btn-pirataria">
+            <i class="bi bi-google"></i> Conectar
+        </a>
+    </div>
+</div>
+{% endif %}
+
+{% if proximos %}
+<div class="card card-pirataria mb-4" style="border-left:4px solid var(--green-accent);">
+    <div class="card-body">
+        <h6 class="gold-text mb-3 section-header"><i class="bi bi-clock"></i> Próximos Agendamentos</h6>
+        {% for ag in proximos %}
+        <div class="d-flex align-items-center gap-3 py-2 {% if not loop.last %}border-bottom{% endif %}" style="border-color:var(--border-color)!important;">
+            <div class="text-center" style="min-width:70px;">
+                <div style="font-size:1.5rem;font-weight:700;color:var(--gold);line-height:1;">
+                    {{ ag.scheduled_at.strftime('%d') if ag.scheduled_at else '—' }}
+                </div>
+                <small class="text-secondary" style="font-size:0.7rem;">
+                    {{ ag.scheduled_at.strftime('%b').upper() if ag.scheduled_at else '' }}
+                </small>
+                <br>
+                <small class="gold-text" style="font-size:0.75rem;">
+                    {{ ag.scheduled_at.strftime('%H:%M') if ag.scheduled_at else '' }}
+                </small>
+            </div>
+            <div class="flex-grow-1">
+                <strong>{{ ag.cliente }}</strong><br>
+                <small class="text-secondary">{{ ag.procedimento or '' }}{% if ag.joia_utilizada %} — {{ ag.joia_utilizada }}{% endif %}</small>
+            </div>
+            <div class="text-end">
+                {% if ag.valor %}<span class="gold-text fw-bold">R$ {{ "%.0f"|format(ag.valor) }}</span>{% endif %}
+                {% if ag.piercer %}<br><small class="text-secondary">{{ ag.piercer }}</small>{% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% elif integration %}
+<div class="card card-pirataria mb-4">
+    <div class="card-body text-center py-4">
+        <i class="bi bi-calendar-check" style="font-size:3rem;color:var(--text-muted);"></i>
+        <p class="serif-subtitle mt-2">Nenhum agendamento futuro.</p>
+        <p class="small text-secondary">Crie eventos no Google Agenda ou registre atendimentos no site.</p>
+    </div>
+</div>
+{% endif %}
+
+{% if passados %}
+<div class="card card-pirataria">
+    <div class="card-body">
+        <h6 class="gold-text mb-3 section-header"><i class="bi bi-clock-history"></i> Últimos Atendimentos</h6>
+        {% for ag in passados %}
+        <div class="d-flex align-items-center gap-3 py-2 {% if not loop.last %}border-bottom{% endif %}" style="border-color:var(--border-color)!important;">
+            <div class="text-center" style="min-width:70px;">
+                <div style="font-size:1.2rem;font-weight:600;color:var(--text-secondary);line-height:1;">
+                    {{ ag.scheduled_at.strftime('%d') if ag.scheduled_at else ag.created_at.strftime('%d') }}
+                </div>
+                <small class="text-secondary" style="font-size:0.7rem;">
+                    {{ (ag.scheduled_at or ag.created_at).strftime('%b').upper() }}
+                </small>
+            </div>
+            <div class="flex-grow-1">
+                <strong>{{ ag.cliente }}</strong><br>
+                <small class="text-secondary">{{ ag.procedimento or '' }}</small>
+            </div>
+            <div class="text-end">
+                <span class="gold-text fw-bold">R$ {{ "%.0f"|format(ag.valor) }}</span><br>
+                <small class="text-secondary">{{ ag.forma_pagamento }}</small>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+{% endblock %}

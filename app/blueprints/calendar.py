@@ -7,7 +7,7 @@ from google_auth_oauthlib.flow import Flow
 
 from app import db
 from app.middleware.tenant import inject_studio
-from app.models.schemas import CalendarIntegration
+from app.models.schemas import CalendarIntegration, Atendimento
 from app.services import google_service
 
 logger = logging.getLogger(__name__)
@@ -33,6 +33,31 @@ def _get_flow():
         },
         scopes=google_service.SCOPES,
         redirect_uri=current_app.config['GOOGLE_REDIRECT_URI'],
+    )
+
+
+@calendar_bp.route('/agenda')
+@login_required
+def agenda():
+    agora = datetime.now(timezone.utc)
+    proximos = Atendimento.query.filter(
+        Atendimento.studio_id == current_user.studio_id,
+        Atendimento.is_active == True,
+        Atendimento.scheduled_at >= agora,
+    ).order_by(Atendimento.scheduled_at.asc()).all()
+
+    passados = Atendimento.query.filter(
+        Atendimento.studio_id == current_user.studio_id,
+        Atendimento.is_active == True,
+        Atendimento.scheduled_at < agora,
+    ).order_by(Atendimento.scheduled_at.desc()).limit(20).all()
+
+    integration = CalendarIntegration.query.filter_by(studio_id=current_user.studio_id).first()
+    return render_template(
+        'agenda.html',
+        proximos=proximos,
+        passados=passados,
+        integration=integration,
     )
 
 

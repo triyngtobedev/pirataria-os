@@ -2,6 +2,45 @@
 {% block title %}Dashboard — Pirataria Body Art OS{% endblock %}
 {% block content %}
 
+{% if proximos_agendamentos %}
+<div class="card card-pirataria mb-4" style="border-color:var(--green-accent);border-left:4px solid var(--gold);">
+    <div class="card-body">
+        <div class="d-flex align-items-center gap-3 flex-wrap">
+            <div style="font-size:2rem;color:var(--gold);"><i class="bi bi-calendar-check"></i></div>
+            <div class="flex-grow-1">
+                <h6 class="gold-text mb-1">Próximo(s) Agendamento(s)</h6>
+                {% for ag in proximos_agendamentos %}
+                <div class="d-flex align-items-center gap-3 py-1">
+                    <span class="badge" style="background:var(--gold-dark);font-size:0.8rem;">
+                        {{ ag.scheduled_at.strftime('%d/%m %H:%M') if ag.scheduled_at else '—' }}
+                    </span>
+                    <strong>{{ ag.cliente }}</strong>
+                    <small class="text-secondary">{{ ag.procedimento or '' }}</small>
+                </div>
+                {% endfor %}
+            </div>
+            <a href="{{ url_for('calendar.agenda') }}" class="btn btn-outline-pirataria btn-sm">
+                <i class="bi bi-calendar-event"></i> Ver Agenda
+            </a>
+        </div>
+    </div>
+</div>
+{% elif tem_calendario %}
+<div class="card card-pirataria mb-4">
+    <div class="card-body">
+        <div class="d-flex align-items-center gap-3">
+            <div style="font-size:2rem;color:var(--text-muted);"><i class="bi bi-calendar"></i></div>
+            <div class="flex-grow-1">
+                <span class="text-secondary">Nenhum agendamento futuro</span>
+            </div>
+            <a href="{{ url_for('calendar.agenda') }}" class="btn btn-outline-pirataria btn-sm">
+                <i class="bi bi-calendar-event"></i> Agenda
+            </a>
+        </div>
+    </div>
+</div>
+{% endif %}
+
 {% if atendimentos_hoje|length == 0 and estoque_baixo|length == 0 and total_produtos == 0 %}
 <div class="card card-pirataria mb-4" style="border-color:var(--gold-dark);">
     <div class="card-body text-center py-5">

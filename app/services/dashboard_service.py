@@ -1,6 +1,7 @@
-from datetime import date
+from datetime import datetime, timezone, date
 from app.repositories.atendimento_repo import AtendimentoRepository
 from app.repositories.produto_repo import ProdutoRepository
+from app.models.schemas import Atendimento, CalendarIntegration
 from app.quotes import quote_of_the_day
 
 
@@ -15,6 +16,15 @@ class DashboardService:
         estoque_baixo = ProdutoRepository.estoque_baixo(studio_id)
         atendimentos_hoje = AtendimentoRepository.listar_hoje(studio_id)
         total_produtos = ProdutoRepository.total_ativo(studio_id)
+
+        agora = datetime.now(timezone.utc)
+        proximos = Atendimento.query.filter(
+            Atendimento.studio_id == studio_id,
+            Atendimento.scheduled_at >= agora,
+            Atendimento.is_active == True,
+        ).order_by(Atendimento.scheduled_at.asc()).limit(3).all()
+
+        tem_calendario = CalendarIntegration.query.filter_by(studio_id=studio_id).first() is not None
 
         return {
             'quote': quote_of_the_day(),
@@ -31,4 +41,6 @@ class DashboardService:
             'estoque_baixo': estoque_baixo,
             'atendimentos_hoje': atendimentos_hoje,
             'total_produtos': total_produtos,
+            'proximos_agendamentos': proximos,
+            'tem_calendario': tem_calendario,
         }

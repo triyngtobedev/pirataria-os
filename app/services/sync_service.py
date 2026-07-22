@@ -59,6 +59,7 @@ def sync_from_google(studio_id):
                 existing.piercer = dados.get('piercer', existing.piercer)
                 atualizados += 1
         else:
+            scheduled = datetime.fromisoformat(start_dt.replace('Z', '+00:00')) if start_dt else None
             a = Atendimento(
                 studio_id=studio_id,
                 google_event_id=event_id,
@@ -69,7 +70,8 @@ def sync_from_google(studio_id):
                 forma_pagamento=dados.get('pagamento', ''),
                 piercer=dados.get('piercer', ''),
                 status='Pago',
-                created_at=datetime.fromisoformat(start_dt.replace('Z', '+00:00')) if start_dt else datetime.now(timezone.utc),
+                scheduled_at=scheduled,
+                created_at=datetime.now(timezone.utc),
             )
             db.session.add(a)
             criados += 1

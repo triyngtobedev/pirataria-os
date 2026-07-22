@@ -117,6 +117,7 @@ class Atendimento(db.Model):
     deleted_at = db.Column(db.DateTime, nullable=True)
     created_by_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
     google_event_id = db.Column(db.String(500), nullable=True)
+    scheduled_at = db.Column(db.DateTime, nullable=True)
 
     studio = db.relationship('Studio', backref='atendimentos')
     created_by = db.relationship('User', foreign_keys=[created_by_id])
