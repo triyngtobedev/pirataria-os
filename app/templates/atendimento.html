@@ -74,10 +74,10 @@
 
 <div class="modal fade" id="modalNovoAtendimento" tabindex="-1">
     <div class="modal-dialog">
-        <div class="modal-content" style="background:var(--bg-card);color:var(--text-primary);border:1px solid var(--border-color);">
+        <div class="modal-content">
             <div class="modal-header border-secondary">
                 <h5 class="gold-text mb-0"><i class="bi bi-plus-circle"></i> Novo Atendimento</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <form method="POST" action="{{ url_for('atendimento.novo') }}">
                 <div class="modal-body">

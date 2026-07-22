@@ -29,12 +29,12 @@
                         {% for i in insumos %}
                         <tr>
                             <td><strong class="gold-text">{{ i.nome }}</strong></td>
-                            <td><span style="color:#f0f0f0;">{{ i.categoria or '—' }}</span></td>
-                            <td class="fw-bold" style="color:#f0f0f0;">{{ i.quantidade }}</td>
-                            <td style="color:#999999;">{{ i.unidade }}</td>
-                            <td style="color:#f0f0f0;">R$ {{ "%.2f"|format(i.custo_unitario) }}</td>
-                            <td style="color:#999999;">{{ i.fornecedor or '—' }}</td>
-                            <td style="color:#999999;">{{ i.local_fisico or '—' }}</td>
+                            <td><span>{{ i.categoria or '—' }}</span></td>
+                            <td class="fw-bold">{{ i.quantidade }}</td>
+                            <td style="color:#888;">{{ i.unidade }}</td>
+                            <td>R$ {{ "%.2f"|format(i.custo_unitario) }}</td>
+                            <td style="color:#888;">{{ i.fornecedor or '—' }}</td>
+                            <td style="color:#888;">{{ i.local_fisico or '—' }}</td>
                             <td>
                                 <div class="d-flex gap-1">
                                     <button class="btn btn-sm btn-outline-pirataria py-0 px-2" onclick="editarInsumo({{ i.id }}, '{{ i.nome.replace("'", "\\'") }}', '{{ i.categoria.replace("'", "\\'") }}', {{ i.quantidade }}, '{{ i.unidade }}', {{ i.custo_unitario }}, '{{ i.fornecedor.replace("'", "\\'") }}', '{{ i.local_fisico.replace("'", "\\'") }}')">
@@ -66,10 +66,10 @@
 
 <div class="modal fade" id="modalAdicionar" tabindex="-1">
     <div class="modal-dialog modal-lg">
-        <div class="modal-content" style="background:var(--bg-card);color:var(--text-primary);border:1px solid var(--border-color);">
+        <div class="modal-content">
             <div class="modal-header border-secondary">
                 <h5 class="gold-text mb-0"><i class="bi bi-plus-circle"></i> Novo Insumo</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <form method="POST" action="{{ url_for('insumos.adicionar') }}">
                 <div class="modal-body">
@@ -125,10 +125,10 @@
 
 <div class="modal fade" id="modalEditar" tabindex="-1">
     <div class="modal-dialog modal-lg">
-        <div class="modal-content" style="background:var(--bg-card);color:var(--text-primary);border:1px solid var(--border-color);">
+        <div class="modal-content">
             <div class="modal-header border-secondary">
                 <h5 class="gold-text mb-0"><i class="bi bi-pencil"></i> Editar Insumo</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <form method="POST" id="formEditar">
                 <div class="modal-body">

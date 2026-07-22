@@ -42,19 +42,19 @@
                                 {% endif %}
                             </td>
                             <td><strong class="gold-text">{{ p.nome }}</strong></td>
-                            <td style="color:#e0e0e0;">{{ p.tipo_joia or '—' }}</td>
+                            <td>{{ p.tipo_joia or '—' }}</td>
                             <td>
                                 {% if p.material %}
-                                    <span class="badge badge-pirataria" style="background:rgba(255,255,255,0.1);color:#e0e0e0;font-weight:600;">
+                                    <span class="badge badge-pirataria" style="background:rgba(0,0,0,0.05);color:#333;font-weight:600;">
                                         {{ p.material }}
                                     </span>
-                                {% else %}<span style="color:#e0e0e0;">—</span>{% endif %}
+                                {% else %}<span style="color:#888;">—</span>{% endif %}
                             </td>
-                            <td style="color:#e0e0e0;">{{ p.local_aplicacao or '—' }}</td>
-                            <td class="fw-bold" style="color:#e0e0e0;">{{ p.quantidade }}</td>
-                            <td style="color:#e0e0e0;">R$ {{ "%.0f"|format(p.custo) }}</td>
+                            <td>{{ p.local_aplicacao or '—' }}</td>
+                            <td class="fw-bold">{{ p.quantidade }}</td>
+                            <td>R$ {{ "%.0f"|format(p.custo) }}</td>
                             <td class="gold-text fw-bold">R$ {{ "%.0f"|format(p.valor_venda) }}</td>
-                            <td style="color:#999999;">{{ p.local_fisico or '—' }}</td>
+                            <td style="color:#888;">{{ p.local_fisico or '—' }}</td>
                             <td>
                                 {% if p.quantidade == 0 %}
                                     <span class="status-repor"><i class="bi bi-circle-fill me-1" style="font-size:0.5rem;"></i>Repor</span>
@@ -95,10 +95,10 @@
 
 <div class="modal fade" id="modalAdicionar" tabindex="-1">
     <div class="modal-dialog modal-lg">
-        <div class="modal-content" style="background:var(--bg-card);color:var(--text-primary);border:1px solid var(--border-color);">
+        <div class="modal-content">
             <div class="modal-header border-secondary">
                 <h5 class="gold-text mb-0"><i class="bi bi-plus-circle"></i> Nova Joia</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <form method="POST" action="{{ url_for('estoque.adicionar') }}" enctype="multipart/form-data">
                 <div class="modal-body">
@@ -168,10 +168,10 @@
 
 <div class="modal fade" id="modalEditar" tabindex="-1">
     <div class="modal-dialog modal-lg">
-        <div class="modal-content" style="background:var(--bg-card);color:var(--text-primary);border:1px solid var(--border-color);">
+        <div class="modal-content">
             <div class="modal-header border-secondary">
                 <h5 class="gold-text mb-0"><i class="bi bi-pencil"></i> Editar Joia</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <form method="POST" id="formEditar" enctype="multipart/form-data">
                 <div class="modal-body">
@@ -227,10 +227,10 @@
 
 <div class="modal fade" id="modalFoto" tabindex="-1">
     <div class="modal-dialog modal-md modal-dialog-centered">
-        <div class="modal-content" style="background:var(--bg-card);border:1px solid var(--gold-dark);">
+        <div class="modal-content" style="border:1px solid var(--gold-dark);">
             <div class="modal-header border-secondary">
                 <h6 class="gold-text mb-0" id="fotoTitulo"></h6>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body text-center p-3">
                 <img id="fotoGrande" src="" class="img-fluid rounded" style="max-height:70vh;object-fit:contain;">

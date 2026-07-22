@@ -65,7 +65,7 @@ def seed_studio(studio_id):
             joia_utilizada=a["joia"],
             valor=a["valor"],
             forma_pagamento=a["pagamento"],
-            piercer="Padrinho",
+            piercer="Digão",
             status="Pago",
             created_at=created
         ))

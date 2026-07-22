@@ -70,26 +70,26 @@
                     {% for m in meses %}
                     <tr>
                         <td><strong class="gold-text">{{ m.nome_mes }}</strong></td>
-                        <td style="color:#f0f0f0;">{{ m.atendimentos }}</td>
-                        <td style="color:#2ecc71;font-weight:600;">R$ {{ "%.0f"|format(m.receita) }}</td>
-                        <td style="color:#e74c3c;">R$ {{ "%.0f"|format(m.custo) }}</td>
-                        <td class="fw-bold" style="color:{{ '#2ecc71' if m.lucro >= 0 else '#e74c3c' }};">R$ {{ "%.0f"|format(m.lucro) }}</td>
-                        <td style="color:#f0f0f0;">R$ {{ "%.0f"|format(m.pix) }}</td>
-                        <td style="color:#f0f0f0;">R$ {{ "%.0f"|format(m.dinheiro) }}</td>
-                        <td style="color:#f0f0f0;">R$ {{ "%.0f"|format(m.cartao) }}</td>
+                        <td>{{ m.atendimentos }}</td>
+                        <td style="color:#27ae60;font-weight:600;">R$ {{ "%.0f"|format(m.receita) }}</td>
+                        <td style="color:#c0392b;">R$ {{ "%.0f"|format(m.custo) }}</td>
+                        <td class="fw-bold" style="color:{{ '#27ae60' if m.lucro >= 0 else '#c0392b' }};">R$ {{ "%.0f"|format(m.lucro) }}</td>
+                        <td>R$ {{ "%.0f"|format(m.pix) }}</td>
+                        <td>R$ {{ "%.0f"|format(m.dinheiro) }}</td>
+                        <td>R$ {{ "%.0f"|format(m.cartao) }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
                 <tfoot>
                     <tr style="border-top:2px solid var(--gold-dark);">
                         <td><strong class="gold-text">Total</strong></td>
-                        <td style="color:#f0f0f0;font-weight:600;">{{ total_atend }}</td>
-                        <td style="color:#2ecc71;font-weight:600;">R$ {{ "%.0f"|format(total_receita) }}</td>
-                        <td style="color:#e74c3c;font-weight:600;">R$ {{ "%.0f"|format(total_custo) }}</td>
+                        <td style="font-weight:600;">{{ total_atend }}</td>
+                        <td style="color:#27ae60;font-weight:600;">R$ {{ "%.0f"|format(total_receita) }}</td>
+                        <td style="color:#c0392b;font-weight:600;">R$ {{ "%.0f"|format(total_custo) }}</td>
                         <td class="fw-bold gold-text">R$ {{ "%.0f"|format(total_lucro) }}</td>
-                        <td style="color:#f0f0f0;">R$ {{ "%.0f"|format(meses | sum(attribute='pix')) }}</td>
-                        <td style="color:#f0f0f0;">R$ {{ "%.0f"|format(meses | sum(attribute='dinheiro')) }}</td>
-                        <td style="color:#f0f0f0;">R$ {{ "%.0f"|format(meses | sum(attribute='cartao')) }}</td>
+                        <td>R$ {{ "%.0f"|format(meses | sum(attribute='pix')) }}</td>
+                        <td>R$ {{ "%.0f"|format(meses | sum(attribute='dinheiro')) }}</td>
+                        <td>R$ {{ "%.0f"|format(meses | sum(attribute='cartao')) }}</td>
                     </tr>
                 </tfoot>
             </table>
