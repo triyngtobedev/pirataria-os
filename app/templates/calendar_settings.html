@@ -38,8 +38,13 @@
                         </a>
                         <a href="{{ url_for('calendar.clear_synced') }}"
                            class="btn btn-outline-danger btn-sm"
-                           onclick="return confirm('Remover todos os eventos importados da agenda?')">
+                           onclick="return confirm('Remover todos os eventos importados?')">
                             <i class="bi bi-trash"></i> Limpar importados
+                        </a>
+                        <a href="{{ url_for('calendar.connect') }}"
+                           class="btn btn-outline-warning btn-sm"
+                           onclick="return confirm('Reconectar renova as permissões (necessário para Tasks). Continuar?')">
+                            <i class="bi bi-arrow-repeat"></i> Reconectar
                         </a>
                         <a href="{{ url_for('calendar.disconnect') }}"
                            class="btn btn-outline-pirataria btn-sm"
@@ -50,8 +55,8 @@
                 </div>
                 <div class="alert alert-info small p-3" style="background:var(--bg-card-hover);border:1px solid var(--border-color);border-radius:4px;">
                     <i class="bi bi-info-circle"></i>
-                    Ao criar um atendimento no site, um evento é criado automaticamente na sua agenda.
-                    Eventos criados diretamente no Google Agenda aparecerão aqui após a sincronização.
+                    Sincroniza eventos do calendário e tarefas do Google Tasks como atendimentos.
+                    Use <strong>Reconectar</strong> para atualizar as permissões (necessário após adicionar Tasks).
                 </div>
                 {% else %}
                 <p class="text-muted small mb-3">
