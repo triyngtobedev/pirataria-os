@@ -2,9 +2,9 @@
 {% block title %}Estoque — Pirataria Body Art OS{% endblock %}
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-4 section-header">
-    <h4 class="gold-text mb-0" style="font-size:1.8rem;"><i class="bi bi-box-seam"></i> Estoque</h4>
+    <h4 class="gold-text mb-0" style="font-size:1.8rem;"><i class="bi bi-box-seam"></i> Catálogo de Joias</h4>
     <button class="btn btn-pirataria" data-bs-toggle="modal" data-bs-target="#modalAdicionar">
-        <i class="bi bi-plus-lg"></i> Novo Produto
+        <i class="bi bi-plus-lg"></i> Nova Joia
     </button>
 </div>
 
@@ -14,41 +14,51 @@
             <table class="table table-pirataria mb-0">
                 <thead>
                     <tr>
-                        <th>Produto</th>
-                        <th>Categoria</th>
+                        <th>Joia</th>
+                        <th>Tipo</th>
+                        <th>Material</th>
+                        <th>Aplicação</th>
                         <th>Qtd</th>
                         <th>Custo</th>
                         <th>Venda</th>
                         <th>Local</th>
                         <th>Status</th>
-                        <th style="width:80px;"></th>
+                        <th style="width:70px;"></th>
                     </tr>
                 </thead>
                 <tbody>
                     {% if produtos %}
                         {% for p in produtos %}
                         <tr>
-                            <td><strong>{{ p.nome }}</strong></td>
-                            <td><span class="badge badge-pirataria" style="background:rgba(212,168,67,0.15);color:var(--gold);">{{ p.categoria or '—' }}</span></td>
-                            <td>{{ p.quantidade }}</td>
+                            <td><strong class="gold-text">{{ p.nome }}</strong></td>
+                            <td><small>{{ p.tipo_joia or '—' }}</small></td>
+                            <td>
+                                {% if p.material %}
+                                    <span class="badge badge-pirataria" style="background:rgba(212,168,67,0.12);color:var(--gold);font-weight:600;">
+                                        {{ p.material }}
+                                    </span>
+                                {% else %}—{% endif %}
+                            </td>
+                            <td><small>{{ p.local_aplicacao or '—' }}</small></td>
+                            <td class="fw-bold">{{ p.quantidade }}</td>
                             <td>R$ {{ "%.0f"|format(p.custo) }}</td>
                             <td class="gold-text fw-bold">R$ {{ "%.0f"|format(p.valor_venda) }}</td>
                             <td><small class="text-secondary">{{ p.local_fisico or '—' }}</small></td>
                             <td>
                                 {% if p.quantidade == 0 %}
-                                    <span class="status-repor"><i class="bi bi-circle-fill" style="font-size:0.6rem;"></i> Repor</span>
+                                    <span class="status-repor"><i class="bi bi-circle-fill me-1" style="font-size:0.5rem;"></i>Repor</span>
                                 {% elif p.quantidade <= 3 %}
-                                    <span class="status-poucas"><i class="bi bi-circle-fill" style="font-size:0.6rem;"></i> Poucas</span>
+                                    <span class="status-poucas"><i class="bi bi-circle-fill me-1" style="font-size:0.5rem;"></i>Poucas</span>
                                 {% else %}
-                                    <span class="status-disponivel"><i class="bi bi-circle-fill" style="font-size:0.6rem;"></i> Disponível</span>
+                                    <span class="status-disponivel"><i class="bi bi-circle-fill me-1" style="font-size:0.5rem;"></i>OK</span>
                                 {% endif %}
                             </td>
                             <td>
                                 <div class="d-flex gap-1">
-                                    <button class="btn btn-sm btn-outline-pirataria py-0 px-2" onclick="editarProduto({{ p.id }}, '{{ p.nome.replace("'", "\\'") }}', '{{ p.categoria.replace("'", "\\'") }}', {{ p.quantidade }}, {{ p.custo }}, {{ p.valor_venda }}, '{{ p.local_fisico.replace("'", "\\'") }}')">
+                                    <button class="btn btn-sm btn-outline-pirataria py-0 px-2" onclick="editarProduto({{ p.id }}, '{{ p.nome.replace("'", "\\'") }}', '{{ p.tipo_joia.replace("'", "\\'") }}', '{{ p.material.replace("'", "\\'") }}', '{{ p.local_aplicacao.replace("'", "\\'") }}', {{ p.quantidade }}, {{ p.custo }}, {{ p.valor_venda }}, '{{ p.local_fisico.replace("'", "\\'") }}')">
                                         <i class="bi bi-pencil"></i>
                                     </button>
-                                    <a href="{{ url_for('estoque.excluir', id=p.id) }}" class="btn btn-sm btn-danger-pirataria py-0 px-2" onclick="return confirm('Remover {{ p.nome }}?')">
+                                    <a href="{{ url_for('estoque.excluir', id=p.id) }}" class="btn btn-sm" style="border:1px solid var(--red-accent);color:var(--red-accent);border-radius:4px;padding:0 8px;" onclick="return confirm('Remover {{ p.nome }}?')">
                                         <i class="bi bi-trash"></i>
                                     </a>
                                 </div>
@@ -57,11 +67,11 @@
                         {% endfor %}
                     {% else %}
                         <tr>
-                            <td colspan="8">
+                            <td colspan="10">
                                 <div class="empty-state">
                                     <i class="bi bi-box-seam"></i>
-                                    <p class="mt-2">Nenhum produto cadastrado</p>
-                                    <button class="btn btn-pirataria btn-sm" data-bs-toggle="modal" data-bs-target="#modalAdicionar">Adicionar Primeiro Produto</button>
+                                    <p class="mt-2">Nenhuma joia cadastrada no catálogo</p>
+                                    <button class="btn btn-pirataria btn-sm" data-bs-toggle="modal" data-bs-target="#modalAdicionar">Adicionar Primeira Joia</button>
                                 </div>
                             </td>
                         </tr>
@@ -73,40 +83,62 @@
 </div>
 
 <div class="modal fade" id="modalAdicionar" tabindex="-1">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content" style="background:var(--bg-card);color:var(--text-primary);border:1px solid var(--border-color);">
             <div class="modal-header border-secondary">
-                <h5 class="gold-text mb-0"><i class="bi bi-plus-circle"></i> Novo Produto</h5>
+                <h5 class="gold-text mb-0"><i class="bi bi-plus-circle"></i> Nova Joia</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <form method="POST" action="{{ url_for('estoque.adicionar') }}">
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label class="form-label">Nome do Produto *</label>
+                        <label class="form-label gold-text small">Nome da Joia *</label>
                         <input type="text" name="nome" class="form-control form-pirataria" placeholder="Ex: Argola Clicker Dourada 8mm" required>
                     </div>
                     <div class="row g-3 mb-3">
-                        <div class="col-6">
-                            <label class="form-label">Categoria</label>
-                            <input type="text" name="categoria" class="form-control form-pirataria" placeholder="Ex: Argola, Lóbulo, Umbilical">
+                        <div class="col-4">
+                            <label class="form-label gold-text small">Tipo</label>
+                            <input type="text" name="tipo_joia" class="form-control form-pirataria" placeholder="Ex: Argola, Barbell, Banana" list="tipoList">
+                            <datalist id="tipoList">
+                                <option value="Argola"><option value="Argola Clicker"><option value="Barbell Reto">
+                                <option value="Barbell Curvo"><option value="Banana"><option value="Microdermal">
+                                <option value="Pino"><option value="Lóbulo"><option value="Septum">
+                            </datalist>
                         </div>
-                        <div class="col-6">
-                            <label class="form-label">Quantidade</label>
-                            <input type="number" name="quantidade" class="form-control form-pirataria" value="1" min="0">
+                        <div class="col-4">
+                            <label class="form-label gold-text small">Material</label>
+                            <input type="text" name="material" class="form-control form-pirataria" placeholder="Ex: Titânio, Aço" list="materialList">
+                            <datalist id="materialList">
+                                <option value="Titânio"><option value="Aço Cirúrgico"><option value="Acrílico">
+                                <option value="Ouro 18k"><option value="Prata"><option value="Niobium">
+                            </datalist>
+                        </div>
+                        <div class="col-4">
+                            <label class="form-label gold-text small">Aplicação</label>
+                            <input type="text" name="local_aplicacao" class="form-control form-pirataria" placeholder="Ex: Nariz, Hélix" list="aplList">
+                            <datalist id="aplList">
+                                <option value="Lóbulo"><option value="Hélix"><option value="Conch">
+                                <option value="Tragus"><option value="Nariz"><option value="Septum">
+                                <option value="Umbigo"><option value="Superfície"><option value="Microdermal">
+                            </datalist>
                         </div>
                     </div>
                     <div class="row g-3 mb-3">
-                        <div class="col-6">
-                            <label class="form-label">Custo (R$)</label>
+                        <div class="col-4">
+                            <label class="form-label gold-text small">Quantidade</label>
+                            <input type="number" name="quantidade" class="form-control form-pirataria" value="1" min="0">
+                        </div>
+                        <div class="col-4">
+                            <label class="form-label gold-text small">Custo (R$)</label>
                             <input type="number" name="custo" class="form-control form-pirataria" value="0" step="0.01" min="0">
                         </div>
-                        <div class="col-6">
-                            <label class="form-label">Valor de Venda (R$)</label>
+                        <div class="col-4">
+                            <label class="form-label gold-text small">Valor de Venda (R$)</label>
                             <input type="number" name="valor_venda" class="form-control form-pirataria" value="0" step="0.01" min="0">
                         </div>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Local Físico</label>
+                        <label class="form-label gold-text small">Local Físico</label>
                         <input type="text" name="local_fisico" class="form-control form-pirataria" placeholder="Ex: Gaveta 2, Prateleira A">
                     </div>
                 </div>
@@ -120,40 +152,48 @@
 </div>
 
 <div class="modal fade" id="modalEditar" tabindex="-1">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content" style="background:var(--bg-card);color:var(--text-primary);border:1px solid var(--border-color);">
             <div class="modal-header border-secondary">
-                <h5 class="gold-text mb-0"><i class="bi bi-pencil"></i> Editar Produto</h5>
+                <h5 class="gold-text mb-0"><i class="bi bi-pencil"></i> Editar Joia</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <form method="POST" id="formEditar">
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label class="form-label">Nome do Produto *</label>
+                        <label class="form-label gold-text small">Nome da Joia *</label>
                         <input type="text" name="nome" id="editNome" class="form-control form-pirataria" required>
                     </div>
                     <div class="row g-3 mb-3">
-                        <div class="col-6">
-                            <label class="form-label">Categoria</label>
-                            <input type="text" name="categoria" id="editCategoria" class="form-control form-pirataria">
+                        <div class="col-4">
+                            <label class="form-label gold-text small">Tipo</label>
+                            <input type="text" name="tipo_joia" id="editTipo" class="form-control form-pirataria" list="tipoList">
                         </div>
-                        <div class="col-6">
-                            <label class="form-label">Quantidade</label>
-                            <input type="number" name="quantidade" id="editQuantidade" class="form-control form-pirataria" min="0">
+                        <div class="col-4">
+                            <label class="form-label gold-text small">Material</label>
+                            <input type="text" name="material" id="editMaterial" class="form-control form-pirataria" list="materialList">
+                        </div>
+                        <div class="col-4">
+                            <label class="form-label gold-text small">Aplicação</label>
+                            <input type="text" name="local_aplicacao" id="editAplicacao" class="form-control form-pirataria" list="aplList">
                         </div>
                     </div>
                     <div class="row g-3 mb-3">
-                        <div class="col-6">
-                            <label class="form-label">Custo (R$)</label>
+                        <div class="col-4">
+                            <label class="form-label gold-text small">Quantidade</label>
+                            <input type="number" name="quantidade" id="editQuantidade" class="form-control form-pirataria" min="0">
+                        </div>
+                        <div class="col-4">
+                            <label class="form-label gold-text small">Custo (R$)</label>
                             <input type="number" name="custo" id="editCusto" class="form-control form-pirataria" step="0.01" min="0">
                         </div>
-                        <div class="col-6">
-                            <label class="form-label">Valor de Venda (R$)</label>
+                        <div class="col-4">
+                            <label class="form-label gold-text small">Valor de Venda (R$)</label>
                             <input type="number" name="valor_venda" id="editValorVenda" class="form-control form-pirataria" step="0.01" min="0">
                         </div>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Local Físico</label>
+                        <label class="form-label gold-text small">Local Físico</label>
                         <input type="text" name="local_fisico" id="editLocal" class="form-control form-pirataria">
                     </div>
                 </div>
@@ -167,13 +207,15 @@
 </div>
 
 <script>
-function editarProduto(id, nome, categoria, quantidade, custo, valorVenda, local) {
+function editarProduto(id, nome, tipo, material, aplicacao, qtd, custo, venda, local) {
     document.getElementById('formEditar').action = '{{ url_for("estoque.editar", id=0) }}'.replace('0', id);
     document.getElementById('editNome').value = nome;
-    document.getElementById('editCategoria').value = categoria;
-    document.getElementById('editQuantidade').value = quantidade;
+    document.getElementById('editTipo').value = tipo;
+    document.getElementById('editMaterial').value = material;
+    document.getElementById('editAplicacao').value = aplicacao;
+    document.getElementById('editQuantidade').value = qtd;
     document.getElementById('editCusto').value = custo;
-    document.getElementById('editValorVenda').value = valorVenda;
+    document.getElementById('editValorVenda').value = venda;
     document.getElementById('editLocal').value = local;
     new bootstrap.Modal(document.getElementById('modalEditar')).show();
 }

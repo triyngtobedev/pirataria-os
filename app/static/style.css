@@ -8,12 +8,14 @@
     --gold: #d4a843;
     --gold-light: #f0d080;
     --gold-dark: #a88530;
-    --text-primary: #e8e8e8;
-    --text-secondary: #999;
-    --red-accent: #c0392b;
-    --red-old: #8b1a1a;
-    --green-accent: #27ae60;
-    --yellow-accent: #f39c12;
+    --text-primary: #f0f0f0;
+    --text-secondary: #aaa;
+    --red-accent: #e74c3c;
+    --red-bg: rgba(231, 76, 60, 0.15);
+    --green-accent: #2ecc71;
+    --green-bg: rgba(46, 204, 113, 0.15);
+    --yellow-accent: #f1c40f;
+    --yellow-bg: rgba(241, 196, 15, 0.15);
 }
 
 * { box-sizing: border-box; }
@@ -195,8 +197,8 @@ h1, h2, h3, h4, h5, h6,
 }
 
 .table-pirataria th {
-    border-color: var(--border-color);
-    color: var(--text-secondary);
+    border-color: var(--border-color) !important;
+    color: var(--gold) !important;
     font-size: 0.75rem;
     text-transform: uppercase;
     letter-spacing: 1.5px;
@@ -205,8 +207,13 @@ h1, h2, h3, h4, h5, h6,
 }
 
 .table-pirataria td {
-    border-color: var(--border-color);
+    border-color: var(--border-color) !important;
     vertical-align: middle;
+    color: var(--text-primary);
+}
+
+.table-pirataria tbody tr:hover {
+    background: rgba(212, 168, 67, 0.03);
 }
 
 .form-pirataria {
@@ -228,9 +235,18 @@ h1, h2, h3, h4, h5, h6,
 .form-pirataria::placeholder { color: #444; font-style: italic; }
 .form-pirataria option { background: var(--bg-card); color: var(--text-primary); }
 
-.status-disponivel { color: var(--green-accent); }
-.status-poucas { color: var(--yellow-accent); }
-.status-repor { color: var(--red-accent); }
+.status-disponivel {
+    color: var(--green-accent);
+    font-weight: 600;
+}
+.status-poucas {
+    color: var(--yellow-accent);
+    font-weight: 600;
+}
+.status-repor {
+    color: var(--red-accent);
+    font-weight: 700;
+}
 
 .badge-pirataria {
     padding: 0.4rem 0.8rem;

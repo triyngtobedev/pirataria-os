@@ -28,7 +28,9 @@ def adicionar():
     p = Produto(
         studio_id=current_user.studio_id,
         nome=nome,
-        categoria=request.form.get('categoria', '').strip(),
+        tipo_joia=request.form.get('tipo_joia', '').strip(),
+        material=request.form.get('material', '').strip(),
+        local_aplicacao=request.form.get('local_aplicacao', '').strip(),
         quantidade=int(request.form.get('quantidade', 0)),
         custo=float(request.form.get('custo', 0)),
         valor_venda=float(request.form.get('valor_venda', 0)),
@@ -44,7 +46,9 @@ def adicionar():
 def editar(id):
     p = Produto.query.filter_by(id=id, studio_id=current_user.studio_id).first_or_404()
     p.nome = request.form.get('nome', '').strip()
-    p.categoria = request.form.get('categoria', '').strip()
+    p.tipo_joia = request.form.get('tipo_joia', '').strip()
+    p.material = request.form.get('material', '').strip()
+    p.local_aplicacao = request.form.get('local_aplicacao', '').strip()
     p.quantidade = int(request.form.get('quantidade', 0))
     p.custo = float(request.form.get('custo', 0))
     p.valor_venda = float(request.form.get('valor_venda', 0))
