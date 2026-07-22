@@ -35,7 +35,7 @@
                 {% for ag in proximos_agendamentos %}
                 <div class="d-flex align-items-center gap-3 py-1">
                     <span class="badge" style="background:var(--gold-dark);font-size:0.8rem;color:var(--text-primary);">
-                        {{ ag.scheduled_at.strftime('%d/%m %H:%M') if ag.scheduled_at else '—' }}
+                        {% if ag.scheduled_at %}{{ ag.scheduled_at.strftime('%d/%m') }}{% if ag.scheduled_at.strftime('%H:%M') != '00:00' %} {{ ag.scheduled_at.strftime('%H:%M') }}{% endif %}{% else %}—{% endif %}
                     </span>
                     <strong style="color:var(--text-primary);">{{ ag.cliente }}</strong>
                     <small class="text-secondary">{{ ag.procedimento or '' }}</small>

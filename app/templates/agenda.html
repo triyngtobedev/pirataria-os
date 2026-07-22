@@ -48,7 +48,7 @@
                 </small>
                 <br>
                 <small class="gold-text" style="font-size:0.75rem;">
-                    {{ ag.scheduled_at.strftime('%H:%M') if ag.scheduled_at else '' }}
+                    {% if ag.scheduled_at and ag.scheduled_at.strftime('%H:%M') != '00:00' %}{{ ag.scheduled_at.strftime('%H:%M') }}{% endif %}
                 </small>
             </div>
             <div class="flex-grow-1">
