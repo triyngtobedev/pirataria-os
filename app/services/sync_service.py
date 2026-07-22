@@ -42,16 +42,6 @@ def _importar_evento(studio_id, event_id, summary, description, start_dt, event_
         except (ValueError, TypeError):
             event_updated = None
 
-    if existing:
-        if scheduled is not None:
-            existing.scheduled_at = scheduled
-        if event_updated and existing.updated_at and event_updated > existing.updated_at.replace(tzinfo=timezone.utc):
-            for campo in ('cliente', 'procedimento', 'joia_utilizada', 'valor', 'forma_pagamento', 'piercer'):
-                v = dados.get(campo)
-                if v is not None:
-                    setattr(existing, campo, v)
-        return 0
-
     scheduled = None
     if start_dt:
         try:
@@ -61,6 +51,16 @@ def _importar_evento(studio_id, event_id, summary, description, start_dt, event_
             scheduled = parsed
         except (ValueError, TypeError):
             logger.warning('Erro ao parsear data do evento %s: %s', event_id, start_dt)
+
+    if existing:
+        if scheduled is not None:
+            existing.scheduled_at = scheduled
+        if event_updated and existing.updated_at and event_updated > existing.updated_at.replace(tzinfo=timezone.utc):
+            for campo in ('cliente', 'procedimento', 'joia_utilizada', 'valor', 'forma_pagamento', 'piercer'):
+                v = dados.get(campo)
+                if v is not None:
+                    setattr(existing, campo, v)
+        return 0
     a = Atendimento(
         studio_id=studio_id,
         google_event_id=event_id,

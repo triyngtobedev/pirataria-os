@@ -29,11 +29,11 @@ def criar_evento(integration, client_id, client_secret, cliente, procedimento=''
             start = data_hora.replace(tzinfo=BRT)
         else:
             start = data_hora.astimezone(BRT)
-        end = start.replace(hour=start.hour + 1)
+        end = start + timedelta(hours=1)
     else:
         agora = datetime.now(BRT)
         start = agora
-        end = agora.replace(hour=agora.hour + 1)
+        end = start + timedelta(hours=1)
 
     descricao = ''
     if procedimento:
