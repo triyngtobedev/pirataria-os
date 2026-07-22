@@ -17,7 +17,7 @@ class DashboardService:
         atendimentos_hoje = AtendimentoRepository.listar_hoje(studio_id)
         total_produtos = ProdutoRepository.total_ativo(studio_id)
 
-        agora = datetime.now(timezone.utc)
+        agora = datetime.now(timezone.utc).replace(tzinfo=None)
         proximos = Atendimento.query.filter(
             Atendimento.studio_id == studio_id,
             Atendimento.is_active == True,

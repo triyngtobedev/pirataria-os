@@ -39,7 +39,7 @@ def _get_flow():
 @calendar_bp.route('/agenda')
 @login_required
 def agenda():
-    agora = datetime.now(timezone.utc)
+    agora = datetime.now(timezone.utc).replace(tzinfo=None)
 
     todos = Atendimento.query.filter(
         Atendimento.studio_id == current_user.studio_id,
