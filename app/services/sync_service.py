@@ -83,7 +83,9 @@ def sync_from_google(studio_id):
         summary = event.get('summary', '')
         description = event.get('description', '')
         start = event.get('start', {})
-        start_dt = start.get('dateTime') or start.get('date')
+        if not start.get('dateTime'):
+            continue
+        start_dt = start.get('dateTime')
         updated = event.get('updated', '')
         criados += _importar_evento(studio_id, eid, summary, description, start_dt, updated)
 
@@ -103,6 +105,8 @@ def sync_from_google(studio_id):
             notes = task.get('notes', '')
             due = task.get('due', '')
             updated = task.get('updated', '')
+            if 'Parabéns' in title or 'aniversário' in title.lower():
+                continue
             criados += _importar_evento(studio_id, tid, title, notes, due, updated)
 
     integration.last_sync_at = datetime.now(timezone.utc)

@@ -12,19 +12,19 @@
                 <div class="mb-4">
                     <div class="d-flex align-items-center gap-2 mb-2">
                         <span class="badge bg-success" style="font-size:0.8rem;">Conectado</span>
-                        <span class="text-muted small">{{ integration.google_email or '' }}</span>
+                        <span class="small" style="color:var(--text-primary);">{{ integration.google_email or '' }}</span>
                     </div>
-                    <p class="small text-muted mb-2">
+                    <p class="small mb-2" style="color:var(--text-primary);">
                         <i class="bi bi-calendar"></i> Calendário:
-                        <strong style="color:var(--text-primary)">{{ integration.calendar_id or 'Principal' }}</strong>
+                        <strong>{{ integration.calendar_id or 'Principal' }}</strong>
                         &nbsp;<a href="{{ url_for('calendar.listar_calendarios') }}" class="text-warning small">Trocar</a>
                     </p>
-                    <p class="small text-muted mb-2">
+                    <p class="small mb-2" style="color:var(--text-primary);">
                         <i class="bi bi-check2-square"></i> Lista de Tarefas:
-                        <strong style="color:var(--text-primary)">{{ integration.tasks_list_id or 'Nenhuma' }}</strong>
+                        <strong>{{ integration.tasks_list_id or 'Nenhuma' }}</strong>
                         &nbsp;<a href="{{ url_for('calendar.listar_tasklists') }}" class="text-warning small">Escolher</a>
                     </p>
-                    <p class="small text-muted mb-2">
+                    <p class="small mb-2" style="color:var(--text-primary);">
                         <i class="bi bi-arrow-repeat"></i> Última sincronia:
                         {% if integration.last_sync_at %}
                             {{ integration.last_sync_at.strftime('%d/%m/%Y %H:%M') }}
