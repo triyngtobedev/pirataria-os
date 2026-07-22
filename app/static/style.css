@@ -28,7 +28,7 @@ body {
 h1, h2, h3, h4, h5, h6,
 .gold-text, .navbar-brand, .display-font {
     font-family: 'Pirata One', serif;
-    letter-spacing: 1px;
+    letter-spacing: 3px;
 }
 
 .navbar-pirataria {
@@ -41,7 +41,7 @@ h1, h2, h3, h4, h5, h6,
 .navbar-pirataria .navbar-brand {
     color: var(--gold) !important;
     font-weight: 400;
-    letter-spacing: 2px;
+    letter-spacing: 4px;
     font-size: 1.5rem;
     display: flex;
     align-items: center;
@@ -147,7 +147,7 @@ h1, h2, h3, h4, h5, h6,
     font-weight: 700;
     font-family: 'Pirata One', serif;
     font-size: 1rem;
-    letter-spacing: 1px;
+    letter-spacing: 2px;
     padding: 0.5rem 1.5rem;
     border-radius: 4px;
     transition: all 0.2s;
@@ -294,7 +294,7 @@ h1, h2, h3, h4, h5, h6,
 
 .login-title {
     font-size: 1.8rem;
-    letter-spacing: 3px;
+    letter-spacing: 5px;
 }
 
 /* Subtitle serif */
