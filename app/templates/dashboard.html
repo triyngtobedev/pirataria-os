@@ -20,20 +20,20 @@
 </div>
 {% endif %}
 
-<div class="card card-pirataria mb-4" style="background:linear-gradient(135deg, #f0e8d8 0%, #faf5ea 100%);border-color:var(--gold-dark);">
+<div class="card card-pirataria mb-4 quote-card" style="border-color:var(--gold-dark);">
     <div class="card-body">
         <div class="row align-items-center">
             <div class="col-12 col-md-1 text-center mb-2 mb-md-0">
                 <i class="bi bi-quote" style="font-size:2rem;color:var(--gold);opacity:0.8;"></i>
             </div>
             <div class="col-12 col-md-9">
-                <p class="mb-1 serif-subtitle" style="font-size:1.05rem;font-style:italic;color:#333;">
+                <p class="mb-1 serif-subtitle" style="font-size:1.05rem;font-style:italic;">
                     "{{ quote.text }}"
                 </p>
                 <small class="gold-text">— {{ quote.author }}</small>
             </div>
             <div class="col-12 col-md-2 text-md-end mt-2 mt-md-0">
-                <small style="color:#888;">{{ hoje_data }}</small>
+                <small class="text-secondary">{{ hoje_data }}</small>
             </div>
         </div>
     </div>
@@ -63,7 +63,7 @@
                         <div class="card-value">{{ procedimentos }}</div>
                         <small class="text-secondary">{{ mes_procedimentos }} no mês</small>
                     </div>
-                    <div class="dashboard-icon" style="color:#3498db;"><i class="bi bi-gear"></i></div>
+                    <div class="dashboard-icon" style="color:var(--text-muted);"><i class="bi bi-gear"></i></div>
                 </div>
             </div>
         </div>
@@ -74,7 +74,7 @@
                 <div class="d-flex justify-content-between">
                     <div>
                         <div class="card-title">Clientes Hoje</div>
-                        <div class="card-value" style="color:#2ecc71;">{{ clientes_novos }}</div>
+                        <div class="card-value" style="color:var(--green-accent);">{{ clientes_novos }}</div>
                         <small class="text-secondary">{{ mes_clientes }} no mês</small>
                     </div>
                     <div class="dashboard-icon" style="color:#2ecc71;"><i class="bi bi-people"></i></div>
@@ -88,7 +88,7 @@
                 <div class="d-flex justify-content-between">
                     <div>
                         <div class="card-title">Estoque Baixo</div>
-                        <div class="card-value" style="color:#e74c3c;">{{ estoque_baixo|length }}</div>
+                        <div class="card-value" style="color:var(--red-accent);">{{ estoque_baixo|length }}</div>
                         <small class="text-secondary">{{ total_produtos }} produtos</small>
                     </div>
                     <div class="dashboard-icon" style="color:#e74c3c;"><i class="bi bi-exclamation-triangle"></i></div>
@@ -136,15 +136,15 @@
                 <h6 class="gold-text mb-3 section-header"><i class="bi bi-wallet2"></i> Formas de Pagamento</h6>
                 <div class="d-flex justify-content-between mb-2">
                     <span><span class="badge" style="background:#27ae60;">Pix</span></span>
-                    <span class="fw-bold">R$ {{ "%.0f"|format(total_pix) }}</span>
+                    <span class="fw-bold gold-text">R$ {{ "%.0f"|format(total_pix) }}</span>
                 </div>
                 <div class="d-flex justify-content-between mb-2">
                     <span><span class="badge" style="background:#f39c12;">Dinheiro</span></span>
-                    <span class="fw-bold">R$ {{ "%.0f"|format(total_dinheiro) }}</span>
+                    <span class="fw-bold gold-text">R$ {{ "%.0f"|format(total_dinheiro) }}</span>
                 </div>
                 <div class="d-flex justify-content-between">
                     <span><span class="badge" style="background:#3498db;">Cartão</span></span>
-                    <span class="fw-bold">R$ {{ "%.0f"|format(total_cartao) }}</span>
+                    <span class="fw-bold gold-text">R$ {{ "%.0f"|format(total_cartao) }}</span>
                 </div>
                 {% if faturamento == 0 %}
                 <div class="empty-state mt-3">

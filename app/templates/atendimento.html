@@ -29,7 +29,7 @@
                     {% if atendimentos %}
                         {% for at in atendimentos %}
                         <tr>
-                            <td><span class="badge badge-pirataria" style="background:rgba(212,168,67,0.15);color:var(--gold);">#{{ at.id }}</span></td>
+                            <td><span class="badge badge-pirataria" style="background:var(--badge-bg);color:var(--gold);">#{{ at.id }}</span></td>
                             <td><strong>{{ at.cliente }}</strong></td>
                             <td>{{ at.procedimento or '—' }}</td>
                             <td><small>{{ at.joia_utilizada or '—' }}</small></td>

@@ -55,7 +55,7 @@
                                     {% if p.favorito %}
                                         <i class="bi bi-heart-fill" style="color:#e74c3c;font-size:1.1rem;"></i>
                                     {% else %}
-                                        <i class="bi bi-heart" style="color:#bbb;font-size:1.1rem;"></i>
+                                        <i class="bi bi-heart" style="color:var(--text-muted);font-size:1.1rem;"></i>
                                     {% endif %}
                                 </a>
                             </td>
@@ -66,14 +66,14 @@
                                      onclick="verFoto('{{ url_for('static', filename='uploads/' + p.foto) }}', '{{ p.nome.replace("'", "\\'") }}')"
                                      alt="{{ p.nome }}">
                                 {% else %}
-                                <span style="color:#bbb;font-size:0.7rem;">sem foto</span>
+                                <span style="color:var(--text-muted);font-size:0.7rem;">sem foto</span>
                                 {% endif %}
                             </td>
                             <td><strong class="gold-text">{{ p.nome }}</strong></td>
                             <td class="td-tipo">{{ p.tipo_joia or '—' }}</td>
                             <td>
                                 {% if p.material %}
-                                    <span class="badge badge-pirataria td-material" style="background:rgba(0,0,0,0.05);color:#333;font-weight:600;">
+                                    <span class="badge badge-pirataria td-material" style="background:var(--badge-bg);color:var(--badge-text);font-weight:600;">
                                         {{ p.material }}
                                     </span>
                                 {% else %}<span class="td-material" style="color:#888;">—</span>{% endif %}
@@ -82,7 +82,7 @@
                             <td class="fw-bold td-qtd">{{ p.quantidade }}</td>
                             <td>R$ {{ "%.0f"|format(p.custo) }}</td>
                             <td class="gold-text fw-bold">R$ {{ "%.0f"|format(p.valor_venda) }}</td>
-                            <td style="color:#888;">{{ p.local_fisico or '—' }}</td>
+                            <td style="color:var(--text-muted);">{{ p.local_fisico or '—' }}</td>
                             <td class="td-status">
                                 {% if p.quantidade == 0 %}
                                     <span class="status-repor"><i class="bi bi-circle-fill me-1" style="font-size:0.5rem;"></i>Repor</span>

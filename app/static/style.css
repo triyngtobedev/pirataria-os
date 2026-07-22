@@ -222,6 +222,9 @@ h1, h2, h3, h4, h5, h6,
 .table-pirataria {
     color: var(--text-primary);
     border-color: var(--border-color);
+    --bs-table-bg: transparent;
+    --bs-table-striped-bg: transparent;
+    --bs-table-hover-bg: transparent;
 }
 
 .table-pirataria th {
@@ -239,6 +242,7 @@ h1, h2, h3, h4, h5, h6,
     vertical-align: middle;
     color: var(--text-primary);
     font-size: 0.9rem;
+    background: transparent !important;
 }
 
 .table-pirataria td small {
@@ -253,6 +257,14 @@ h1, h2, h3, h4, h5, h6,
 
 .table-pirataria tbody tr:hover {
     background: rgba(212, 168, 67, 0.03);
+}
+
+.table-pirataria thead {
+    background: transparent;
+}
+
+.table-pirataria thead th {
+    background: transparent !important;
 }
 
 .form-pirataria {
@@ -433,4 +445,20 @@ input[type="number"]::-webkit-inner-spin-button {
 
 [data-theme="dark"] .btn-close {
     filter: invert(1) grayscale(100%) brightness(200%);
+}
+
+.quote-card {
+    background: linear-gradient(135deg, #f0e8d8 0%, #faf5ea 100%);
+}
+
+[data-theme="dark"] .quote-card {
+    background: linear-gradient(135deg, #1a1410 0%, #221a14 100%);
+}
+
+[data-theme="dark"] .quote-card .serif-subtitle {
+    color: var(--text-secondary) !important;
+}
+
+[data-theme="dark"] .quote-card small {
+    color: var(--gold) !important;
 }

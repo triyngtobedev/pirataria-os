@@ -31,10 +31,10 @@
                             <td><strong class="gold-text">{{ i.nome }}</strong></td>
                             <td><span>{{ i.categoria or '—' }}</span></td>
                             <td class="fw-bold">{{ i.quantidade }}</td>
-                            <td style="color:#888;">{{ i.unidade }}</td>
+                            <td style="color:var(--text-muted);">{{ i.unidade }}</td>
                             <td>R$ {{ "%.2f"|format(i.custo_unitario) }}</td>
-                            <td style="color:#888;">{{ i.fornecedor or '—' }}</td>
-                            <td style="color:#888;">{{ i.local_fisico or '—' }}</td>
+                            <td style="color:var(--text-muted);">{{ i.fornecedor or '—' }}</td>
+                            <td style="color:var(--text-muted);">{{ i.local_fisico or '—' }}</td>
                             <td>
                                 <div class="d-flex gap-1">
                                     <button class="btn btn-sm btn-outline-pirataria py-0 px-2" onclick="editarInsumo({{ i.id }}, '{{ i.nome.replace("'", "\\'") }}', '{{ i.categoria.replace("'", "\\'") }}', {{ i.quantidade }}, '{{ i.unidade }}', {{ i.custo_unitario }}, '{{ i.fornecedor.replace("'", "\\'") }}', '{{ i.local_fisico.replace("'", "\\'") }}')">
