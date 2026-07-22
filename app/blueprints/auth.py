@@ -1,8 +1,13 @@
 from flask import Blueprint, render_template, redirect, url_for, request, flash
 from flask_login import login_user, logout_user, login_required
+from app.middleware.tenant import inject_studio
 from app.services.auth_service import AuthService
 
 auth_bp = Blueprint('auth', __name__, template_folder='../templates')
+
+@auth_bp.before_request
+def before_request():
+    inject_studio()
 
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():

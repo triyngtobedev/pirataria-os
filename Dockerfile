@@ -12,6 +12,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
+RUN chmod +x startup.sh
+
 EXPOSE 8080
 
-CMD flask db upgrade 2>/dev/null || flask db stamp head && flask db upgrade && gunicorn --bind 0.0.0.0:$PORT run:app
+CMD ./startup.sh

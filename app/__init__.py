@@ -1,5 +1,6 @@
 import os
-from flask import Flask
+import logging
+from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_migrate import Migrate
@@ -46,6 +47,15 @@ def create_app(config_name=None):
     app.register_blueprint(atendimento_bp, url_prefix='/atendimento')
     app.register_blueprint(insumos_bp, url_prefix='/insumos')
     app.register_blueprint(financeiro_bp, url_prefix='/financeiro')
+
+    @app.errorhandler(500)
+    def internal_error(error):
+        app.logger.exception('Internal Server Error: %s', error)
+        return render_template('errors/500.html'), 500
+
+    @app.errorhandler(404)
+    def not_found(error):
+        return render_template('errors/404.html'), 404
 
     with app.app_context():
         os.makedirs(os.path.join(os.path.dirname(__file__), 'data'), exist_ok=True)
